@@ -12,3 +12,4 @@ function CadastroDeTarefas(){
         </div>
     );
 }
+export default CadastroDeTarefas;
