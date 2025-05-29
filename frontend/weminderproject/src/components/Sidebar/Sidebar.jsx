@@ -11,7 +11,7 @@ function Sidebar(){
                 <h1 className="mt-2">Bem vindo(a), USERNAME</h1>
             </div>
             <div className='space-y-4 text-[25px] cursor-pointer'>
-                <h1>Cadastro de tarefas</h1>
+                <h1 href="../CadastroDeTarefas/cadastroDeTarefas.jsx">Cadastro de tarefas</h1>
                 <h1>Exibir tarefas</h1>
             </div>
             <button className='absolute bottom-2 flex items-center space-x-2 cursor-pointer'>
