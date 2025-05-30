@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div className="App">
-      <Sidebar clicked={clicked}/>
+      <Sidebar cadastroClick={() => setModalIsOpen(true)}/>
       {modalOpen && <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} /> }
       <Tasks />     
     </div>
