@@ -13,24 +13,33 @@ html, body, #root {
 
 .content{
   display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 170%;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: 8%;
+  box-sizing: border-box;
 }
 
 .data {
   color: black;
   height: 20%;
   font-size: 200%;
-  position: fixed;
-  left: 27%;
-  top: 5%;
+  position: relative; /* position: fixed; */
+  /* left: 27%;
+  top: 5%; */
+  text-align: left;
+  width: 50%;
+  margin-bottom: 10px;
 }
 
 .task_box {
   display: inline;
-  position: fixed;
+  position: relative; /* position: fixed; */
   width: 50%;
-  top: 17%;
-  left: 27%;
+  /* top: 17%;
+  left: 27%; */
   background-color: rgb(235, 232, 232);
   border-radius: 20px;    
   border: 2px solid rgb(130, 130, 130);
@@ -39,6 +48,7 @@ html, body, #root {
   padding-top: 0.5%;
   padding-left: 2%;
   padding-bottom: 0.5%;
+  margin-bottom: 40px;
 }
 
 .task_desc{
@@ -49,7 +59,7 @@ html, body, #root {
   display: flex;
   position: relative;
   left: 87%;
-  height: 10%;
+  height: 30%;
   width: 10%;
   margin-top: -8%; 
 }
