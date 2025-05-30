@@ -2,9 +2,9 @@ import './index.css';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import CadastroDeTarefas from './components/CadastroDeTarefas/cadastroDeTarefas';
+import TarefasSimples from './components/CadastroDeTarefas/tarefasSimples';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 function App() {
   const[modalOpen, setModalIsOpen] = useState(false);
@@ -24,13 +24,10 @@ function App() {
   return (
     <div className="App">
       <Sidebar/>
-      <Tasks/>
-      <Routes>
-        <Route path="/" element={ <Sidebar/>}/>
-        <Route path="/cadastro" element={<CadastroDeTarefas/>} />
-      </Routes>
-      
+      <TarefasSimples/>
+      <Tasks clicked={clicked}/>     
       {modalOpen && <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} /> }
+      
     </div>
     
   );

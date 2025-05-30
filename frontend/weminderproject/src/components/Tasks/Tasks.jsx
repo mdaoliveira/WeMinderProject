@@ -1,4 +1,4 @@
-function Tasks(){
+function Tasks(props){
     return(
         <div className="content">
             <h1 className="data">29 de maio</h1>
