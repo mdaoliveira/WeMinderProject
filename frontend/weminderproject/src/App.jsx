@@ -24,12 +24,9 @@ function App() {
 
   return (
     <div className="App">
-      <Sidebar/>
-      <TarefasSimples/>
-      <TarefasComplexas/>
-      <Tasks clicked={clicked}/>     
+      <Sidebar clicked={clicked}/>
       {modalOpen && <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} /> }
-      
+      <Tasks />     
     </div>
     
   );
