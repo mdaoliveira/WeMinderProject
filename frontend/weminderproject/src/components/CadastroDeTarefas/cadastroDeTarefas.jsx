@@ -1,12 +1,14 @@
 function CadastroDeTarefas(){
     return(
-        <div class="cadastro-tarefas">
+        <div className="cadastro-tarefas">
             <form>
                 <label>
-                    <input type="radio">Tarefas Simples</input>
+                    <input type="radio" name="tipoTarefa" />
+                    Tarefas Simples
                 </label>
                 <label>
-                    <input type="radio">Tarefas Complexas</input>
+                    <input type="radio" name="tipoTarefa" />
+                    Tarefas Composta
                 </label>
             </form>
         </div>
