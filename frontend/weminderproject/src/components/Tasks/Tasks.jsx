@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 const Tasks = (props) => {
     const[data, setData] = useState([]);
@@ -14,10 +14,13 @@ const Tasks = (props) => {
             console.error("ERROU ", error);
         });
     }, []);
+    const sortedData = useMemo(() => {
+        return [...data].sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+    }, [data]);
  
     return(
         <div className="content">
-            {data.map((item) => (
+            {sortedData.map((item) => (
             <>
             <h1 className="data">
             {new Date(item.due_date).toLocaleDateString('pt-BR',{day: 'numeric', month: 'long', year: 'numeric'})}
