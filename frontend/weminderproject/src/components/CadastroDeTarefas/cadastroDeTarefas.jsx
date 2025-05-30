@@ -6,6 +6,7 @@ function CadastroDeTarefas(){
                     <input type="radio" name="tipoTarefa" />
                     Tarefas Simples
                 </label>
+                <br></br>
                 <label>
                     <input type="radio" name="tipoTarefa" />
                     Tarefas Composta

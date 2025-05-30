@@ -11,8 +11,18 @@ function Sidebar(){
                 <h1 className="mt-2">Bem vindo(a), USERNAME</h1>
             </div>
             <div className='space-y-4 text-[25px] cursor-pointer'>
-                <h1 href="../CadastroDeTarefas/cadastroDeTarefas.jsx">Cadastro de tarefas</h1>
+                <h1>Cadastro de tarefas</h1>
+                <div className='botao-menu'>
+                    <button onClick={() => console.log("testando o botão de cadastro de tarefas")}>
+                        CADASTRO DE TAREFAS
+                    </button>
+                </div>
                 <h1>Exibir tarefas</h1>
+                <div className='botao-menu'>
+                    <button onClick={() => console.log("testando o botão de exibir tarefas")}>
+                        EXIBIR TAREFAS
+                    </button>
+                </div>
             </div>
             <button className='absolute bottom-2 flex items-center space-x-2 cursor-pointer'>
                 <FontAwesomeIcon icon={faArrowRightFromBracket} className='text-2xl relative top-[2px]'/>
