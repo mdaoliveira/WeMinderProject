@@ -2,9 +2,9 @@ function TarefasSimples() {
     return (
         <div className="cadastro-tarefa">
             <h2 className="titulo-div">Criar Tarefa Simples</h2>
-            <label>Título</label>
+            <label className="content-cadastro">Título</label>
             <input type="text" id="titulo" name="texto"/>
-            <label>Descrição</label>
+            <label className="content-cadastro">Descrição</label>
             <input type="text" id="descricao" name="texto"/>
             <label>
                 <input type="radio" name="tipoTarefa" />
