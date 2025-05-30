@@ -26,7 +26,6 @@ function TarefasSimples() {
                     Prioridade Baixa
                 </label>
             <br/>
-
         </div>
     );
 }
