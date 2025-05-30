@@ -11,16 +11,14 @@ function Sidebar({cadastroClick}){
                 <h1 className="mt-2">Bem vindo(a), USERNAME</h1>
             </div>
             <div className='space-y-4 text-[25px] cursor-pointer'>
-                <h1>Cadastro de tarefas</h1>
                 <div className='botao-menu'>
                     <button onClick={cadastroClick}>
-                        CADASTRO DE TAREFAS
+                        Cadastro de tarefas
                     </button>
                 </div>
-                <h1>Exibir tarefas</h1>
                 <div className='botao-menu'>
                     <button onClick={() => console.log("testando o botão de exibir tarefas")}>
-                        EXIBIR TAREFAS
+                        Exibir tarefas
                     </button>
                 </div>
             </div>

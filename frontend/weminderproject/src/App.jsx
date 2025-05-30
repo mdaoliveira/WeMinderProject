@@ -1,11 +1,11 @@
 import './index.css';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
-import CadastroDeTarefas from './components/CadastroDeTarefas/cadastroDeTarefas';
-import TarefasSimples from './components/CadastroDeTarefas/tarefasSimples';
+import CadastroDeTarefas from './components/CadastroDeTarefas/CadastroDeTarefas';
+import TarefasSimples from './components/CadastroDeTarefas/TarefasSimples';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
-import TarefasComplexas from './components/CadastroDeTarefas/tarefasComplexas';
+import TarefasComplexas from './components/CadastroDeTarefas/TarefasComplexas';
 
 function App() {
   const[modalOpen, setModalIsOpen] = useState(false);
@@ -25,7 +25,12 @@ function App() {
   return (
     <div className="App">
       <Sidebar cadastroClick={() => setModalIsOpen(true)}/>
-      {modalOpen && <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} /> }
+      {/* cadastro */}
+      {modalOpen && (
+        <div className="modal-show">
+      <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} /> 
+          </div>
+      )}
       <Tasks />     
     </div>
     

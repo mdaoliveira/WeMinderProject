@@ -63,3 +63,86 @@ html, body, #root {
   width: 10%;
   margin-top: -8%; 
 }
+
+.modal-show {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.cadastro-tarefas {
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  border: 2px solid black;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.titulo-div {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.content-cadastro,
+.cadastro-subtarefas {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.2rem;
+  display: block;
+}
+
+.cadastro-subtarefas {
+  font-size: 1.3rem;
+  margin-top: 1rem;
+}
+
+.cadastro-tarefa input[type="text"] {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
+}
+
+.cadastro-tarefa input[type="radio"] {
+  margin-right: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.botoes {
+  display: flex;
+  flex-direction: row;
+  gap: 8rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.cadastro-tarefas button {
+  padding: 0.5rem 1rem;
+  background-color: #79d4eb;
+  border: none;
+  border-radius: 6px;
+  color: black;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.cadastro-tarefas button:hover {
+  background-color: #136a80;
+}

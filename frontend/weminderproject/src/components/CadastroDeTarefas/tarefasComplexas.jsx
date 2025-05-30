@@ -1,7 +1,7 @@
 function TarefasComplexas(){
     return(
         <div className="cadastro-tarefa">
-            <h2 className="titulo-div">Criar Tarefa Simples</h2>
+            <h2 className="titulo-div">Criar Tarefa Complexa</h2>
             <label className="content-cadastro">Título</label>
             <input type="text" id="titulo" name="texto"/>
 

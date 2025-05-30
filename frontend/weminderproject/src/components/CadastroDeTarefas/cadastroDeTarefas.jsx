@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import TarefasSimples from "./tarefasSimples";
-import TarefasComplexas from "./tarefasComplexas";
+import TarefasSimples from "./TarefasSimples";
+import TarefasComplexas from "./TarefasComplexas";
 
 
-function CadastroDeTarefas(){
+function CadastroDeTarefas({closeModal}){
     const[tipoTarefa, setTipoTarefa] = useState(''); // mantém o item (radio) que foi selecionado
 
     function handleTipoTarefa(e){
@@ -27,6 +27,10 @@ function CadastroDeTarefas(){
             {/*Colocando o componente conforme "solicitado" pelo usuário*/}
             {tipoTarefa === 'simples' && <TarefasSimples/>}
             {tipoTarefa === 'complexa' && <TarefasComplexas/>}
+            <div className="botoes">
+            <button onClick={closeModal}>Fechar</button>
+            <button>Cadastrar</button>
+            </div>
         </div>
     );
 }
