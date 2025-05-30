@@ -97,6 +97,26 @@ html, body, #root {
   margin-bottom: 0.5rem;
 }
 
+.subtarefas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+} 
+
+.adicionar-subtarefa{
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.plus-symbol{
+  height: 1.2rem;
+  width: 1.2rem;
+  display: inline;
+}
+
 .content-cadastro,
 .cadastro-subtarefas {
   font-weight: 600;
