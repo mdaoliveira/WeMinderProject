@@ -59,9 +59,10 @@ html, body, #root {
   display: flex;
   position: relative;
   left: 87%;
-  height: 30%;
+  height: 60%;
   width: 10%;
-  margin-top: -8%; 
+  margin-top: -8.5%;
+  cursor: pointer;
 }
 
 .modal-show {
@@ -78,6 +79,8 @@ html, body, #root {
 }
 
 .cadastro-tarefas {
+  max-height: 100vh;
+  overflow-y: auto;
   background: white;
   padding: 2rem 2.5rem;
   border-radius: 12px;
