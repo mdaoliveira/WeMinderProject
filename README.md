@@ -1,5 +1,6 @@
-BD SCRIPT
+### BD SCRIPT
 
+```sql
 CREATE DATABASE IF NOT EXISTS tarefas;
 USE tarefas;
 
@@ -65,3 +66,4 @@ INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is
 (15, 'Instalar sistema', 'Instalar Ubuntu Server', 1, '2025-06-15', TRUE),
 (15, 'Configurar rede', 'IP estático e firewall', 2, '2025-06-16', FALSE),
 (15, 'Testar acesso', 'Acesso externo via SSH', 1, '2025-06-18', FALSE);
+```
