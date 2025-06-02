@@ -1,6 +1,21 @@
 import { useEffect, useState, useMemo } from "react";
 
 const Tasks = (props) => {
+
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [itemClicked, setItemClicked] = useState(null);
+
+    function clicked(item) {
+        console.log("Clicou no item", item.id);
+        setModalIsOpen(true);
+        setItemClicked(item);
+    }
+
+    function closeModal() {
+        setModalIsOpen(false);
+        setItemClicked(null);
+    }
+
     const[data, setData] = useState([]);
     
     useEffect(() => {
@@ -28,11 +43,30 @@ const Tasks = (props) => {
             <div className="task_box">
                 <div className="task_title"><h2>Título: {item.title}</h2></div>
                 <div className="task_desc"><p>Descrição: {item.description} </p></div>
-                <img src="/images/button.png" className="button_more"></img>
+                <img src="/images/button.png" className="button_more" alt="Mais informações" onClick={() => clicked(item)}></img>
             </div>
             </>
             ))}
+
+            <div>
+                <data clicked={clicked}/>
+
+                {modalIsOpen && itemClicked && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <h1><b>Detalhes da Tarefa</b></h1>
+                            <p><strong>Título: </strong> {itemClicked.title}</p>
+                            <p><strong>Descrição: </strong> {itemClicked.description}</p>
+                            <button onClick={closeModal}>Fechar</button>
+                        </div>
+                    </div>
+            )}
+            </div>
+
         </div>
+
+        
+        
     );
 }
 
