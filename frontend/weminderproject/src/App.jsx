@@ -3,10 +3,8 @@ import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import CadastroDeTarefas from './components/CadastroDeTarefas/CadastroDeTarefas';
 import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
-import TarefasSimples from './components/CadastroDeTarefas/tarefasSimples';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
-import TarefasComplexas from './components/CadastroDeTarefas/tarefasComplexas';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
 function AppContent() {
