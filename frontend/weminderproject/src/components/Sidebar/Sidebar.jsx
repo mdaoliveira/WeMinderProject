@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
-function Sidebar({cadastroClick}){
+function Sidebar({cadastroClick, exibirClick}) {
     return (
         <div className='relative flex h-screen w-full max-w-[20rem] flex-col bg-[#BADFE8] p-4 text-gray-700'>
         {/* Todo conteúdo */}
@@ -17,7 +17,7 @@ function Sidebar({cadastroClick}){
                     </button>
                 </div>
                 <div className='botao-menu'>
-                    <button onClick={() => console.log("testando o botão de exibir tarefas")}>
+                    <button onClick={exibirClick}>
                         Exibir tarefas
                     </button>
                 </div>

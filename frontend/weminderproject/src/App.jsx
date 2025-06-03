@@ -7,6 +7,7 @@ import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
 import TarefasComplexas from './components/CadastroDeTarefas/TarefasComplexas';
 
+
 function App() {
   const[modalOpen, setModalIsOpen] = useState(false);
   const[itemClicked, setItemClicked] = useState(null);
@@ -24,13 +25,21 @@ function App() {
 
   return (
     <div className="App">
-      <Sidebar cadastroClick={() => setModalIsOpen(true)}/>
-      {/* cadastro */}
-      {modalOpen && (
+      <Sidebar cadastroClicked={() => cadastroClicked(null, 'cadastro')} exibirClick={() => clicked(null, 'exibir')}/>
+      {/* MODAL DE CADASTRO */}
+      {modalOpen && modalType === 'cadastro' && (
         <div className="modal-show">
-      <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} /> 
-          </div>
+          <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} />
+        </div>
       )}
+
+      {/* MODAL DE EXIBIÇÃO */}
+      {modalOpen && modalType === 'exibir' && (
+        <div className="modal-show">
+          <ExibirTarefas itemClicked={itemClicked} closeModal={closeModal} />
+        </div>
+      )}
+
       <Tasks />     
     </div>
     
