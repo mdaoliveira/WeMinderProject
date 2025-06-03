@@ -19,6 +19,12 @@ function TarefasComplexas(){
             <label className="content-cadastro">Descrição</label>
             <input type="text" id="descricao" name="texto"/>
 
+            <br/>
+
+            <input type="date" />
+
+            <br/>
+
             <div className="subtarefas-header">
                 <h3 className="cadastro-subtarefas">Subtarefas</h3>
                 <label className="cadastro-subtarefas adicionar-subtarefa">
@@ -29,18 +35,33 @@ function TarefasComplexas(){
 
             <label className="content-cadastro">Nome</label>
             <input type="text" id="nome" name="texto"/>
+
             <br/>
+
             <label className="content-cadastro">Descrição</label>
             <input type="text" id="descricao" name="texto"/>
+            <br/>
+
+            <input type="date" />
+
+            <br/>
            
             {subtarefas.map((item) => (
                 <div>  
                     <hr />
                     <label className="content-cadastro">Nome</label>
                     <input type="text" id="nome" name="texto"/>
+                    
                     <br/>
+                    
                     <label className="content-cadastro">Descrição</label>
                     <input type="text" id="descricao" name="texto"/>
+                    
+                    <br/>
+
+                    <input type="date" />
+
+                    <br/>
                 </div>
             ))}
 
