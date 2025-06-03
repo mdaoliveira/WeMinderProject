@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import TarefasSimples from "./TarefasSimples";
-import TarefasComplexas from "./TarefasComplexas";
+import TarefasSimples from "./tarefasSimples";
+import TarefasComplexas from "./tarefasComplexas";
 
 
 function CadastroDeTarefas({closeModal}){

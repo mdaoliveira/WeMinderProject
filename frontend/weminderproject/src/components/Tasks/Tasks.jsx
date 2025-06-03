@@ -1,21 +1,20 @@
 import { useEffect, useState, useMemo } from "react";
 
-const Tasks = (props) => {
+const isToday = (someDate) => {
+    const today = new Date();
+    return (
+        someDate.getDate() === today.getDate() &&
+        someDate.getMonth() === today.getMonth() &&
+        someDate.getFullYear() === today.getFullYear()
+    );
+};
+
+
+
+const Tasks = () => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [itemClicked, setItemClicked] = useState(null);
-
-    function clicked(item) {
-        console.log("Clicou no item", item.id);
-        setModalIsOpen(true);
-        setItemClicked(item);
-    }
-
-    function closeModal() {
-        setModalIsOpen(false);
-        setItemClicked(null);
-    }
-
     const[data, setData] = useState([]);
     
     useEffect(() => {
@@ -29,13 +28,27 @@ const Tasks = (props) => {
             console.error("ERROU ", error);
         });
     }, []);
-    const sortedData = useMemo(() => {
-        return [...data].sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+    const todayTasks = useMemo(() => {
+        return data.filter((item) => {
+            const dueDate = new Date(item.due_date);
+            return isToday(dueDate);
+        });
     }, [data]);
+
+    function clicked(item) {
+        console.log("Clicou no item", item.id);
+        setModalIsOpen(true);
+        setItemClicked(item);
+    }
+
+    function closeModal() {
+        setModalIsOpen(false);
+        setItemClicked(null);
+    }
  
     return(
         <div className="content">
-            {sortedData.map((item) => (
+            {todayTasks.map((item) => (
             <>
             <h1 className="data">
             {new Date(item.due_date).toLocaleDateString('pt-BR',{day: 'numeric', month: 'long', year: 'numeric'})}

@@ -2,14 +2,16 @@ import './index.css';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import CadastroDeTarefas from './components/CadastroDeTarefas/CadastroDeTarefas';
-import TarefasSimples from './components/CadastroDeTarefas/TarefasSimples';
+import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
+import TarefasSimples from './components/CadastroDeTarefas/tarefasSimples';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
-import TarefasComplexas from './components/CadastroDeTarefas/TarefasComplexas';
+import TarefasComplexas from './components/CadastroDeTarefas/tarefasComplexas';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
-
-function App() {
+function AppContent() {
   const[modalOpen, setModalIsOpen] = useState(false);
+  const[modalType, setModalType] = useState(null);
   const[itemClicked, setItemClicked] = useState(null);
 
   function clicked(item){
@@ -21,11 +23,23 @@ function App() {
   function closeModal(){
     setModalIsOpen(false);
     setItemClicked(null);
+    setModalType(null);
+  }
+
+  const navigate = useNavigate();
+
+  function cadastroClicked() {
+    setModalType('cadastro');
+    setModalIsOpen(true);
+  }
+
+  function exibirClick() {
+    navigate('/exibir');
   }
 
   return (
     <div className="App">
-      <Sidebar cadastroClicked={() => cadastroClicked(null, 'cadastro')} exibirClick={() => clicked(null, 'exibir')}/>
+      <Sidebar cadastroClick={cadastroClicked} exibirClick={exibirClick}/>
       {/* MODAL DE CADASTRO */}
       {modalOpen && modalType === 'cadastro' && (
         <div className="modal-show">
@@ -33,16 +47,19 @@ function App() {
         </div>
       )}
 
-      {/* MODAL DE EXIBIÇÃO */}
-      {modalOpen && modalType === 'exibir' && (
-        <div className="modal-show">
-          <ExibirTarefas itemClicked={itemClicked} closeModal={closeModal} />
-        </div>
-      )}
-
-      <Tasks />     
+      <Routes>
+        <Route path="/" element={<Tasks clicked={clicked} />} />
+        <Route path="/exibir" element={<ExibirTarefas />} />
+      </Routes>
     </div>
-    
+  );
+}
+
+function App(){
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
