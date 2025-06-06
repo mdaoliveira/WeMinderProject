@@ -16,7 +16,7 @@ function Sidebar({inicioClick, cadastroClick, exibirClick}) {
                 {location.pathname === '/exibir' &&(    
                 <div className='botao-menu'>
                     <button onClick={inicioClick}>
-                        Página Incial
+                        Página Inicial
                     </button>
                 </div>
                 )}   
