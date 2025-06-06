@@ -13,7 +13,6 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
 
   const validateForm = (data) => {
     const { title, description, due_date, subtasks, is_complex } = data;
-
     if (!title || !description || !due_date) {
       alert("Todos os campos devem ser preenchidos!");
       return false;
@@ -34,8 +33,6 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
             }
         }
     }
-
-
     return true;
   };
 

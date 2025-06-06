@@ -42,6 +42,12 @@ function AppContent() {
     navigate("/");
   }
 
+  // <button onClick={() => {
+  // setModalType('editar');
+  // setModalIsOpen(true);
+  // }}>Editar</button>
+
+
   function ExcluirTarefas(id) {
     fetch(`http://localhost:8800/tarefas/${id}`, {
       method: "DELETE",
@@ -70,13 +76,48 @@ function AppContent() {
             <h1><b>Detalhes da Tarefa</b></h1>
             <p><strong>Título: </strong>{itemClicked.title}</p>
             <p><strong>Descrição: </strong>{itemClicked.description}</p>
+
+            
+
+            {itemClicked.subtasks && itemClicked.subtasks.length > 0 &&(
+              <div className="subtarefa-detalhes">
+                <h2>Subtarefas</h2>
+                {itemClicked.subtasks.map((sub, index) => (
+                  <div key={index} className="subtarefa-item">
+                    <hr />
+                    <p><strong>Título: </strong>{sub.title}</p>
+                    <p><strong>Descrição: </strong>{sub.description}</p>
+                    <p><strong>Data: </strong>{
+                      new Date(sub.due_date).toLocaleDateString("pt-BR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                      })
+                    }</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+        
             <div className="button-content">
               <button onClick={closeModal}>Fechar</button>
               <button onClick={() => ExcluirTarefas(itemClicked.id)}>Excluir</button>
+              {/* <button onClick={() => {setModalType('editar'); setModalIsOpen(true);}}>Editar</button> */}
             </div>
           </div>
         </div>
       )}
+
+      {/* {modalOpen && modalType === 'editar' && itemClicked && (
+              <div className="modal-show">
+                <EditarTarefas
+                  item={itemClicked}
+                  closeModal={closeModal}
+                  setReloadCount={setReloadCount}
+                />
+              </div>
+      )} */}
 
       <Routes>
         <Route path="/" element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount}/>} />
