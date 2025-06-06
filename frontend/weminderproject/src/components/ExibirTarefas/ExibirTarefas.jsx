@@ -46,7 +46,7 @@ const ExibirTarefas = ({onTaskClicked, reloadPage}) => {
                 <p>Descrição: {tarefa.description}</p>
               </div>
               <img
-                src="/images/button.png"
+                src="/images/olho.png"
                 className="button_more"
                 alt="Mais informações"
                 onClick={() => onTaskClicked(tarefa)}

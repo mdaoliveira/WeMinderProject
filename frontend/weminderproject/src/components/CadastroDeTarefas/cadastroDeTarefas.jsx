@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import TarefasSimples from "./tarefasSimples";
-import TarefasComplexas from "./tarefasComplexas";
+import TarefasSimples from "./TarefasSimples";
+import TarefasComplexas from "./TarefasComplexas";
 
 function CadastroDeTarefas({ closeModal, setReloadCount }) {
   const [tipoTarefa, setTipoTarefa] = useState(''); // mantém o radio selecionado
