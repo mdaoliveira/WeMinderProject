@@ -64,7 +64,7 @@ export const deleteTask = (req, res) => {
 
     db.query(deleteTaskQ, [taskId], (err2) => {
       if (err2) return res.sendStatus(500);
-      return res.sendStatus(200);
+      return res.status(200).json({ message: "Tarefa excluída com sucesso" });
     });
   });
 };

@@ -51,24 +51,11 @@ function TarefasComplexas({onChange}){
                     <img src="/images/plus symbol.png" className="plus-symbol"></img>
                 </label>
             </div>
-
-            {/* <label className="content-cadastro">Nome</label>
-            <input type="text" id="nome" name="texto"/>
-
-            <br/>
-
-            <label className="content-cadastro">Descrição</label>
-            <input type="text" id="descricao" name="texto"/>
-            <br/>
-
-            <input type="date" />
-
-            <br/> */}
            
             {subtasks.map((sub, index) => (
                 <div key={index}>  
                     <hr />
-                    <label className="content-cadastro">Nome</label>
+                    <label className="content-cadastro">Título</label>
                      <input type="text" value={sub.title} onChange={(e) => handleSubtarefaChange(index, "title", e.target.value)}/>
                     <br />
 

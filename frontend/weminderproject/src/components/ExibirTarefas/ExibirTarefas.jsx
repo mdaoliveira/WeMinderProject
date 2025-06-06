@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-const ExibirTarefas = () => {
+const ExibirTarefas = ({onTaskClicked, reloadPage}) => {
   const [data, setData] = useState([]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [itemClicked, setItemClicked] = useState(null);
+  
 
   // Buscar tarefas ao carregar
   useEffect(() => {
     fetchTarefas();
-  }, []);
+  }, [reloadPage]);
 
   const fetchTarefas = () => {
     fetch("http://localhost:8800/tarefas")
@@ -20,32 +19,6 @@ const ExibirTarefas = () => {
         setData(sortedData);
       })
       .catch((error) => console.error("Erro ao buscar tarefas:", error));
-  };
-
-  const clicked = (item) => {
-    setItemClicked(item);
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setItemClicked(null);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8800/tarefas/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Erro ao deletar.");
-
-      // Remove do estado local
-      setData((prev) => prev.filter((t) => t.id !== id));
-      closeModal();
-    } catch (error) {
-      console.error("Erro ao excluir tarefa:", error);
-    }
   };
 
   let ultimaDataExibida = "";
@@ -76,24 +49,12 @@ const ExibirTarefas = () => {
                 src="/images/button.png"
                 className="button_more"
                 alt="Mais informações"
-                onClick={() => clicked(tarefa)}
+                onClick={() => onTaskClicked(tarefa)}
               />
             </div>
           </React.Fragment>
         );
       })}
-
-      {modalIsOpen && itemClicked && (
-        <div className="modal">
-          <div className="modal-content">
-            <h1><b>Detalhes da Tarefa</b></h1>
-            <p><strong>Título: </strong> {itemClicked.title}</p>
-            <p><strong>Descrição: </strong> {itemClicked.description}</p>
-            <button onClick={closeModal}>Fechar</button>
-            <button onClick={() => handleDelete(itemClicked.id)}>Excluir</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

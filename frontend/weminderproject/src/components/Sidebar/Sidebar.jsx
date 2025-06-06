@@ -1,16 +1,25 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
 
-function Sidebar({cadastroClick, exibirClick}) {
+function Sidebar({inicioClick, cadastroClick, exibirClick}) {
+    const location = useLocation();
     return (
         <div className='relative flex h-screen w-full max-w-[20rem] flex-col bg-[#BADFE8] p-4 text-gray-700'>
         {/* Todo conteúdo */}
         <div className='flex flex-col items-center justify-center text-center'>
             <div className='mb-10'>
-                <img src="/images/logo.png" alt="Logo" className='cursor-pointer'/>
+                <img src="/images/logo.png" alt="Logo" className='cursor-pointer' onClick={inicioClick}/>
                 <h1 className="mt-2">Bem vindo(a), USERNAME</h1>
             </div>
             <div className='space-y-4 text-[25px] cursor-pointer'>
+                {location.pathname === '/exibir' &&(    
+                <div className='botao-menu'>
+                    <button onClick={inicioClick}>
+                        Página Incial
+                    </button>
+                </div>
+                )}   
                 <div className='botao-menu'>
                     <button onClick={cadastroClick}>
                         Cadastro de tarefas

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import TarefasSimples from "./tarefasSimples";
 import TarefasComplexas from "./tarefasComplexas";
 
-function CadastroDeTarefas({ closeModal }) {
+function CadastroDeTarefas({ closeModal, setReloadCount }) {
   const [tipoTarefa, setTipoTarefa] = useState(''); // mantém o radio selecionado
   const [simpleTask, setSimpleTask] = useState({});
   const [complexTask, setComplexTask] = useState({});
@@ -12,7 +12,7 @@ function CadastroDeTarefas({ closeModal }) {
   }
 
   const validateForm = (data) => {
-    const { title, description, due_date, priority, subtasks, is_complex } = data;
+    const { title, description, due_date, subtasks, is_complex } = data;
 
     if (!title || !description || !due_date) {
       alert("Todos os campos devem ser preenchidos!");
@@ -88,6 +88,7 @@ function CadastroDeTarefas({ closeModal }) {
         setSimpleTask({});
         setComplexTask({});
         closeModal();
+        setReloadCount(prev => prev + 1);
       })
       .catch((error) => console.error("Erro ao criar tarefa:", error));
   };

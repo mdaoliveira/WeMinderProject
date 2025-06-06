@@ -9,9 +9,7 @@ const isToday = (someDate) => {
   );
 };
 
-const Tasks = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [itemClicked, setItemClicked] = useState(null);
+const Tasks = ({onTaskClicked, reloadPage}) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -26,7 +24,7 @@ const Tasks = () => {
       .catch((error) => {
         console.error("Erro ao buscar tarefas:", error);
       });
-  }, []);
+  }, [reloadPage]);
 
   const todayTasks = useMemo(() => {
     return data.filter((item) => {
@@ -34,36 +32,6 @@ const Tasks = () => {
       return isToday(dueDate);
     });
   }, [data]);
-
-  const clicked = (item) => {
-    setModalIsOpen(true);
-    setItemClicked(item);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-    setItemClicked(null);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8800/tarefas/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao deletar a tarefa.");
-      }
-
-      // Remove a tarefa deletada da lista local
-      setData((prevData) => prevData.filter((tarefa) => tarefa.id !== id));
-
-      // Fecha o modal
-      closeModal();
-    } catch (error) {
-      console.error("Erro:", error);
-    }
-  };
 
   let ultimaDataExibida = "";
 
@@ -92,30 +60,12 @@ const Tasks = () => {
                 src="/images/button.png"
                 className="button_more"
                 alt="Mais informações"
-                onClick={() => clicked(tarefa)}
+                onClick={() => onTaskClicked(tarefa)}
               />
             </div>
           </React.Fragment>
         );
       })}
-
-      {modalIsOpen && itemClicked && (
-        <div className="modal">
-          <div className="modal-content">
-            <h1>
-              <b>Detalhes da Tarefa</b>
-            </h1>
-            <p>
-              <strong>Título: </strong> {itemClicked.title}
-            </p>
-            <p>
-              <strong>Descrição: </strong> {itemClicked.description}
-            </p>
-            <button onClick={closeModal}>Fechar</button>
-            <button onClick={() => handleDelete(itemClicked.id)}>Excluir</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
