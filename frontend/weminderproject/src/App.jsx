@@ -1,7 +1,7 @@
 import './index.css';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
-import CadastroDeTarefas from './components/CadastroDeTarefas/CadastroDeTarefas';
+import CadastroDeTarefas from './components/CadastroDeTarefas/cadastroDeTarefas';
 import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
