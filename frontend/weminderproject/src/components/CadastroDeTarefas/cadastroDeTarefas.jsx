@@ -90,28 +90,59 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
       .catch((error) => console.error("Erro ao criar tarefa:", error));
   };
 
-    return(
-        <div className="cadastro-tarefas">
-            <form onSubmit={addTask}>
-                <label>
-                    <input type="radio" name="tipoTarefa" value={"simples"} checked={tipoTarefa === 'simples'} onChange={handleTipoTarefa}/>
-                    Tarefas Simples
-                </label>
-                <br></br>
-                <label>
-                    <input type="radio" name="tipoTarefa" value={"complexa"} checked={tipoTarefa === 'complexa'} onChange={handleTipoTarefa} />
-                    Tarefas Complexas
-                </label>
-                {/*Colocando o componente conforme "solicitado" pelo usuário*/}
-                {tipoTarefa === 'simples' && <TarefasSimples onChange={setSimpleTask}/>}
-                {tipoTarefa === 'complexa' && <TarefasComplexas onChange={setComplexTask}/>}
-                <div className="botoes">
-                <button onClick={closeModal}>Fechar</button>
-                <button type="submit"> Cadastrar</button>
-                </div>
-            </form>
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+        <form
+          onSubmit={addTask}
+          className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 overflow-auto max-h-[90vh]"
+        >
+          <div className="flex flex-col space-y-4">
+            <div>
+              <label className="inline-flex items-center mr-4">
+                <input
+                  type="radio"
+                  name="tipoTarefa"
+                  value={"simples"}
+                  checked={tipoTarefa === "simples"}
+                  onChange={handleTipoTarefa}
+                  className="form-radio"
+                />
+                <span className="ml-2">Tarefas Simples</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="tipoTarefa"
+                  value={"complexa"}
+                  checked={tipoTarefa === "complexa"}
+                  onChange={handleTipoTarefa}
+                  className="form-radio"
+                />
+                <span className="ml-2">Tarefas Complexas</span>
+              </label>
+            </div>
 
-        </div>
+            {tipoTarefa === "simples" && <TarefasSimples onChange={setSimpleTask} />}
+            {tipoTarefa === "complexa" && <TarefasComplexas onChange={setComplexTask} />}
+
+            <div className="flex justify-between items-center pt-4">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+              >
+                Fechar
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
+              >
+                Cadastrar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     );
 }
 export default CadastroDeTarefas;
