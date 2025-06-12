@@ -69,25 +69,24 @@ export const deleteTask = (req, res) => {
   });
 };
 
-
-// export const putTask = (req, res) => {
-//     const taskId = req.params.id;
-//     const {
-//         title,
-//         description,
-//         priority,
-//         due_date,
-//         is_completed,
-//         is_complex,
+export const editTask = (req, res) => {
+    const taskId = req.params.id;
+    const {
+        title,
+        description,
+        priority,
+        due_date,
+        is_completed,
+        is_complex,
 //         subtasks
-//     } = req.body;
+    } = req.body;
 
-//     // Atualiza a tarefa principal
-//     const updateTaskQ = `
-//         UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, is_complex=?
-//         WHERE id=?
-//     `;
-//     const taskValues = [title, description, priority, due_date, is_completed || false, is_complex || false, taskId];
+    // Atualiza a tarefa principal
+    const updateTaskQ = `
+        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, is_complex=?
+        WHERE id=?
+    `;
+    const taskValues = [title, description, priority, due_date, is_completed || false, is_complex || false, taskId];
 
 //     db.query(updateTaskQ, taskValues, (err) => {
 //         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
@@ -152,4 +151,4 @@ export const deleteTask = (req, res) => {
 
 //         processSubtasks();
 //     });
-// };
+};

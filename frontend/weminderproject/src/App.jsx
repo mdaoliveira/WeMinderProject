@@ -2,6 +2,7 @@ import './index.css';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import CadastroDeTarefas from './components/CadastroDeTarefas/CadastroDeTarefas';
+import EditarTarefas from './components/EditarTarefas/EditarTarefas';
 import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
@@ -41,12 +42,6 @@ function AppContent() {
   function inicioClicked(){
     navigate("/");
   }
-
-  // <button onClick={() => {
-  // setModalType('editar');
-  // setModalIsOpen(true);
-  // }}>Editar</button>
-
 
   function ExcluirTarefas(id) {
     fetch(`http://localhost:8800/tarefas/${id}`, {
@@ -103,21 +98,17 @@ function AppContent() {
             <div className="button-content">
               <button onClick={closeModal}>Fechar</button>
               <button onClick={() => ExcluirTarefas(itemClicked.id)}>Excluir</button>
-              {/* <button onClick={() => {setModalType('editar'); setModalIsOpen(true);}}>Editar</button> */}
+              <button onClick={() => {setModalType('editar'); setModalIsOpen(true); console.log("neon naye boy boy boy");}}>Editar</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* {modalOpen && modalType === 'editar' && itemClicked && (
-              <div className="modal-show">
-                <EditarTarefas
-                  item={itemClicked}
-                  closeModal={closeModal}
-                  setReloadCount={setReloadCount}
-                />
-              </div>
-      )} */}
+      {modalOpen && modalType === 'editar' && itemClicked && (
+        <div className="modal-show">
+          <EditarTarefas itemClicked={itemClicked} closeModal={closeModal} setReloadCount={setReloadCount}/>
+        </div>
+      )}
 
       <Routes>
         <Route path="/" element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount}/>} />
