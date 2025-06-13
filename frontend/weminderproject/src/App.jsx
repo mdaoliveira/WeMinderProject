@@ -38,102 +38,141 @@ function AppContent() {
   }
 
   function inicioClicked() {
-    navigate("/");
+    navigate('/');
   }
 
   function ExcluirTarefas(id) {
     fetch(`http://localhost:8800/tarefas/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     })
       .then(() => {
         closeModal();
         setReloadCount(prev => prev + 1);
       })
-      .catch((error) => console.error("Erro ao deletar registro -> ", error));
-  };
+      .catch(error => console.error('Erro ao deletar registro -> ', error));
+  }
 
   return (
     <div className="App flex">
-      <Sidebar inicioClick={inicioClicked} cadastroClick={cadastroClicked} exibirClick={exibirClicked} />
+      <Sidebar
+        inicioClick={inicioClicked}
+        cadastroClick={cadastroClicked}
+        exibirClick={exibirClicked}
+      />
+
       <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
-        {/* MODAL DE CADASTRO */}
+        {/* Modal de Cadastro */}
         {modalOpen && modalType === 'cadastro' && (
           <div className="modal-show">
-            <CadastroDeTarefas itemClicked={itemClicked} closeModal={closeModal} setReloadCount={setReloadCount} />
+            <CadastroDeTarefas
+              itemClicked={itemClicked}
+              closeModal={closeModal}
+              setReloadCount={setReloadCount}
+            />
           </div>
         )}
 
         {/* Modal de Detalhes */}
         {modalOpen && modalType === 'detalhes' && itemClicked && (
-        <div className="modal-show">
-          <div className="modal-content">
-            <h1><b>Detalhes da Tarefa</b></h1>
-            <p><strong>Título: </strong>{itemClicked.title}</p>
-            <p><strong>Descrição: </strong>{itemClicked.description}</p>
+          <div className="modal-show">
+            <div className="modal-content">
+              <h1>
+                <b>Detalhes da Tarefa</b>
+              </h1>
+              <p>
+                <strong>Título: </strong>
+                {itemClicked.title}
+              </p>
+              <p>
+                <strong>Descrição: </strong>
+                {itemClicked.description}
+              </p>
 
-            {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
-              <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Subtarefas</h2>
-                {itemClicked.subtasks.map((sub, index) => (
-                  <div key={index} className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-900">
-                    <hr className="border-gray-300 dark:border-gray-700 mb-3" />
-                    <p className="text-gray-800 dark:text-gray-200 mb-1">
-                      <strong>Título: </strong>{sub.title}
-                    </p>
-                    <p className="text-gray-700 dark:text-gray-300 mb-1">
-                      <strong>Descrição: </strong>{sub.description}
-                    </p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      <strong>Data: </strong>{new Date(sub.due_date).toLocaleDateString("pt-BR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
-                      })}
-                    </p>
-                  </div>
-                ))}
+              {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
+                <div className="mt-6">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                    Subtarefas
+                  </h2>
+                  {itemClicked.subtasks.map((sub, index) => (
+                    <div
+                      key={index}
+                      className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-900"
+                    >
+                      <hr className="border-gray-300 dark:border-gray-700 mb-3" />
+                      <p className="text-gray-800 dark:text-gray-200 mb-1">
+                        <strong>Título: </strong>
+                        {sub.title}
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300 mb-1">
+                        <strong>Descrição: </strong>
+                        {sub.description}
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        <strong>Data: </strong>
+                        {new Date(sub.due_date).toLocaleDateString('pt-BR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-between items-center pt-4 gap-4">
+                <button
+                  onClick={closeModal}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+                >
+                  Fechar
+                </button>
+                <button
+                  onClick={() => ExcluirTarefas(itemClicked.id)}
+                  className="bg-red-600 hover:bg-red-700 transition text-white font-semibold px-4 py-2 rounded"
+                >
+                  Excluir
+                </button>
+                <button
+                  onClick={() => {
+                    setModalType('editar');
+                    setModalIsOpen(true);
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 transition text-white font-semibold px-4 py-2 rounded"
+                >
+                  Editar
+                </button>
               </div>
-            )}
-
-            <div className="flex justify-between items-center pt-4">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
-              >
-                Fechar
-              </button>
-              <button
-                onClick={() => ExcluirTarefas(itemClicked.id)}
-                className="bg-red-600 hover:bg-red-700 transition text-white font-semibold px-4 py-2 rounded"
-              >
-                Excluir
-              </button>
-
-            
-        
-            <div className="button-content">
-              <button onClick={closeModal}>Fechar</button>
-              <button onClick={() => ExcluirTarefas(itemClicked.id)}>Excluir</button>
-              <button onClick={() => {setModalType('editar'); setModalIsOpen(true); console.log("neon naye boy boy boy");}}>Editar</button>
             </div>
-          </div>  
-        </div>
-      )}
+          </div>
+        )}
 
-      {modalOpen && modalType === 'editar' && itemClicked && (
-        <div className="modal-show">
-          <EditarTarefas itemClicked={itemClicked} closeModal={closeModal} setReloadCount={setReloadCount}/>
-        </div>
-      )}
+        {/* Modal de Edição */}
+        {modalOpen && modalType === 'editar' && itemClicked && (
+          <div className="modal-show">
+            <EditarTarefas
+              itemClicked={itemClicked}
+              closeModal={closeModal}
+              setReloadCount={setReloadCount}
+            />
+          </div>
+        )}
 
-      <Routes>
-        <Route path="/" element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount}/>} />
-        <Route path="/exibir" element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount}/>} />
-      </Routes>
+        <Routes>
+          <Route
+            path="/"
+            element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount} />}
+          />
+          <Route
+            path="/exibir"
+            element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />}
+          />
+        </Routes>
+      </main>
     </div>
   );
 }
+
 
 function App() {
   return (
