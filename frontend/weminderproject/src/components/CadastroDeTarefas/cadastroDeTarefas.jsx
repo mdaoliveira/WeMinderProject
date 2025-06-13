@@ -56,15 +56,16 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
         is_complex: false,
       };
     } else if (tipoTarefa === "complexa") {
-      const { title, description, due_date, subtasks } = complexTask;
+      const { title, description, due_date, priority, subtasks } = complexTask;
 
       // Passa is_complex = true para validar subtarefas
-      if (!validateForm({ title, description, due_date, subtasks, is_complex: true })) return;
+      if (!validateForm({ title, description, due_date, priority, subtasks, is_complex: true })) return;
 
       data = {
         title,
         description,
         due_date,
+        priority: parseInt(priority),
         is_completed: false,
         is_complex: true,
         subtasks,
