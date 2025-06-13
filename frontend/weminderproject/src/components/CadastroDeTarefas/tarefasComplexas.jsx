@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 
+const today = new Date().toISOString().split("T")[0];
+
 function TarefasComplexas({ onChange }) {
   const [title, setNewTitle] = useState("");
   const [description, setNewDescription] = useState("");
   const [due_date, setNewDueDate] = useState("");
+  const [priority, setPriority] = useState("");
   const [subtasks, setSubtasks] = useState([]);
 
   const adicionarSubtarefa = () => {
-    setSubtasks([...subtasks, { title: "", description: "", due_date: "" }]);
+    setSubtasks([...subtasks, { title: "", description: "", due_date: "", priority: null}]);
   };
 
   const handleSubtarefaChange = (index, field, value) => {
@@ -17,8 +20,8 @@ function TarefasComplexas({ onChange }) {
   };
 
   useEffect(() => {
-    onChange?.({ title, description, due_date, subtasks });
-  }, [title, description, due_date, subtasks, onChange]);
+    onChange?.({ title, description, due_date, priority: priority === "" ? "" : parseInt(priority), subtasks });
+  }, [title, description, due_date, priority, subtasks, onChange]);
 
   return (
     <div className="space-y-4">
@@ -48,12 +51,32 @@ function TarefasComplexas({ onChange }) {
         <label className="block font-medium">Data</label>
         <input
           type="date"
+          min={today}
           className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
           value={due_date}
           onChange={(e) => setNewDueDate(e.target.value)}
         />
       </div>
-
+      <div className="space-y-2">
+        <p className="font-medium">Prioridade</p>
+        {[
+          { label: "Sem Prioridade", value: 0 },
+          { label: "Prioridade Alta", value: 1 },
+          { label: "Prioridade Média", value: 2 },
+          { label: "Prioridade Baixa", value: 3 },
+        ].map(({ label, value }) => (
+          <label key={value} className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="priority"
+              value={value}
+              checked={priority === value}
+              onChange={(e) => setPriority(parseInt(e.target.value))}
+            />
+            <span>{label}</span>
+          </label>
+        ))}
+      </div>
       <div className="flex items-center justify-between mt-4">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Subtarefas</h3>
         <button
@@ -87,11 +110,14 @@ function TarefasComplexas({ onChange }) {
           <label className="block font-medium">Data</label>
           <input
             type="date"
+            min={today}
+            max ={due_date}
             className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
             value={sub.due_date}
             onChange={(e) => handleSubtarefaChange(index, "due_date", e.target.value)}
           />
         </div>
+        
       ))}
     </div>
   );

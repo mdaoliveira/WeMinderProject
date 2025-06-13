@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+const today = new Date().toISOString().split("T")[0];
+
 function TarefasSimples({ onChange }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -43,6 +45,7 @@ function TarefasSimples({ onChange }) {
         <label className="block font-medium">Data</label>
         <input
           type="date"
+          min={today}
           className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
           value={due_date}
           onChange={(e) => setDueDate(e.target.value)}
@@ -52,7 +55,7 @@ function TarefasSimples({ onChange }) {
       <div className="space-y-2">
         <p className="font-medium">Prioridade</p>
         {[
-          { label: "Sem Prioridade", value: "" },
+          { label: "Sem Prioridade", value: 0 },
           { label: "Prioridade Alta", value: 1 },
           { label: "Prioridade Média", value: 2 },
           { label: "Prioridade Baixa", value: 3 },

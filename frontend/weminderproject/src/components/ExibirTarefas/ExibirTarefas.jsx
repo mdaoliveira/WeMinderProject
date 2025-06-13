@@ -11,12 +11,40 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
     fetch("http://localhost:8800/tarefas")
       .then((response) => response.json())
       .then((data) => {
-        const sortedData = data.sort(
-          (a, b) => new Date(a.due_date) - new Date(b.due_date)
-        );
-        setData(sortedData);
+        const sortedData = data.sort((a, b) => {
+        const dataA = new Date(a.due_date);
+        const dataB = new Date(b.due_date);
+
+        if (dataA.getTime() !== dataB.getTime()) {
+          return dataA - dataB;
+        }
+
+        // se prioridade é zero
+        let aIsZero;
+        if (a.priority === 0) {
+          aIsZero = 1;
+        } else {
+          aIsZero = 0;
+        }
+        let bIsZero;
+        if (b.priority === 0) {
+          bIsZero = 1;
+        } else {
+          bIsZero = 0;
+        }
+        
+        // ir por último
+        if (aIsZero !== bIsZero) {
+          return aIsZero - bIsZero;
+        }
+
+        return a.priority - b.priority;
+      });
+
+      setData(sortedData);
+
       })
-      .catch((error) => console.error("Erro ao buscar tarefas:", error));
+      .catch((error) => console.error("Erro:", error));
   };
 
   let ultimaDataExibida = "";
@@ -38,6 +66,7 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
 
         return (
           <React.Fragment key={tarefa.id}>
+            {/* const tarefasPrioridade = {tarefa.priority} */}
             {deveExibirData && (
               <h1 className="text-gray-700 dark:text-gray-300 text-lg font-bold mt-6 mb-2 w-full max-w-xl text-left">
                 {dataFormatada}

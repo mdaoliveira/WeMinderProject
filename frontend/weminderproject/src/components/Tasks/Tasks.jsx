@@ -16,14 +16,40 @@ const Tasks = ({ onTaskClicked, reloadPage }) => {
     fetch("http://localhost:8800/tarefas")
       .then((response) => response.json())
       .then((data) => {
-        const sortedData = data.sort(
-          (a, b) => new Date(a.due_date) - new Date(b.due_date)
-        );
-        setData(sortedData);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar tarefas:", error);
+        const sortedData = data.sort((a, b) => {
+        const dataA = new Date(a.due_date);
+        const dataB = new Date(b.due_date);
+
+        if (dataA.getTime() !== dataB.getTime()) {
+          return dataA - dataB;
+        }
+
+        // se prioridade é zero
+        let aIsZero;
+        if (a.priority === 0) {
+          aIsZero = 1;
+        } else {
+          aIsZero = 0;
+        }
+        let bIsZero;
+        if (b.priority === 0) {
+          bIsZero = 1;
+        } else {
+          bIsZero = 0;
+        }
+        
+        // ir por último
+        if (aIsZero !== bIsZero) {
+          return aIsZero - bIsZero;
+        }
+
+        return a.priority - b.priority;
       });
+
+      setData(sortedData);
+
+      })
+      .catch((error) => console.error("Erro:", error));
   }, [reloadPage]);
 
   const todayTasks = useMemo(() => {
@@ -60,6 +86,8 @@ const Tasks = ({ onTaskClicked, reloadPage }) => {
           className="bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6 w-full max-w-xl flex justify-between items-center cursor-pointer"
           onClick={() => onTaskClicked(tarefa)}
         >
+        {/* const tarefasPrioridade = {tarefa.priority} */}
+
           <div className="flex flex-col max-w-[85%]">
             <h2 className="text-gray-900 dark:text-gray-100 font-semibold text-lg mb-2 truncate">
               Título: {tarefa.title}

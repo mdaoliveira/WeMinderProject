@@ -52,6 +52,13 @@ function AppContent() {
       .catch(error => console.error('Erro ao deletar registro -> ', error));
   }
 
+  const priorityLabels = {
+  0: "Sem Prioridade",
+  1: "Prioridade Alta",
+  2: "Prioridade Média",
+  3: "Prioridade Baixa"
+};
+
   return (
     <div className="App flex">
       <Sidebar
@@ -87,6 +94,7 @@ function AppContent() {
                 <strong>Descrição: </strong>
                 {itemClicked.description}
               </p>
+            <p><strong>Prioridade: </strong>{priorityLabels[itemClicked.priority]}</p>
 
               {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
                 <div className="mt-6">
