@@ -2,7 +2,7 @@
 Trabalho em equipe da disciplina Experiência Criativa: Inovando Colaborativamente (5° Período).
 
 ## :bookmark_tabs:	Descrição
-Aplicação para organização de tarefas, com interface simples e intuitiva, desenvolvida com a **biblioteca React** e o framework **Tailwind CSS**.
+Aplicação para organização de tarefas, com interface simples e intuitiva, desenvolvida com a **_biblioteca React_** e o **_framework Tailwind CSS_**.
 
 ## :hammer_and_wrench: Tecnologias utilizadas
 <img src="https://img.icons8.com/?size=100&id=asWSSTBrDlTW&format=png&color=000000" width="20"/> React  
