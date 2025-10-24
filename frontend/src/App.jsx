@@ -1,7 +1,7 @@
 import './index.css';
 import './App.css';
 import Sidebar from './components/Sidebar/Sidebar';
-import CadastroDeTarefas from './components/CadastroDeTarefas/CadastroDeTarefas';
+import CadastroDeTarefas from './components/CadastroDeTarefas/cadastroDeTarefas';
 import EditarTarefas from './components/EditarTarefas/EditarTarefas';
 import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
 import Tasks from './components/Tasks/Tasks';
