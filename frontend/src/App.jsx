@@ -3,7 +3,7 @@ import "./App.css";
 import Sidebar from "./components/Sidebar/Sidebar";
 import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
-import Agenda from "./components/agenda/agenda";
+import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
