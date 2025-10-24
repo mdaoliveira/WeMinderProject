@@ -1,21 +1,44 @@
 import React, { useState, useEffect } from 'react';
 
-function EditarTarefas({ tarefa, closeModal, setReloadCount }) {
+function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
     const [newTitulo, setNewTitulo] = useState('');
     const [newDescricao, setNewDescricao] = useState('');
     const [newData, setNewData] = useState('');
     const [prioridade, setPrioridade] = useState('');
     const [subtarefas, setSubtarefas] = useState([]);
 
-    const updateTask = async () => {
-        const response = await fetch(`http://localhost:8800/tarefas/${tarefa.id}`, {
+    useEffect(() => {
+        if (!itemClicked) return;
+        setNewTitulo(itemClicked.title || '');
+        setNewDescricao(itemClicked.description || '');
+        setNewData(itemClicked.due_date ? itemClicked.due_date.slice(0, 10) : '');
+        setPrioridade(itemClicked.priority || 0);
+    }, [itemClicked]);
+
+    const updateTask = async (e) => {
+        e.preventDefault();
+        if (!itemClicked) return;
+
+        const payload = {
+            title: newTitulo,
+            description: newDescricao,
+            due_date: newData,
+            priority: prioridade,
+            is_completed: false,
+        };
+
+        const response = await fetch(`http://localhost:8800/tarefas/${itemClicked.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify()
+            body: JSON.stringify(payload)
         });
-
+        if (!response.ok){
+            alert("Erro ao atualizar a tarefa.");
+        }
+        setReloadCount(prev => prev + 1);
+        closeModal();
     };
 
      return (
@@ -32,12 +55,7 @@ function EditarTarefas({ tarefa, closeModal, setReloadCount }) {
 
                 <label className="content-cadastro">Data:</label>
                 <input type="date" value={newData} onChange={(e) => setNewData(e.target.value)} />
-                <br />
-            
-                {/*tarefa.is_complex && (
-                    <div>
-                    </div>
-                )*/}                 
+                <br />  
 
                 <br />
                 <div className="botoes">
