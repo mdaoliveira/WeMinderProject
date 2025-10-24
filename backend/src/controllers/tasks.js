@@ -20,15 +20,15 @@ export const getTasks = (req, res) => {
 }
 
 export const postTask = (req, res) => {
-    const {title, description, priority, due_date, is_completed, is_complex, subtasks} = req.body;
-    const qTask = `INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex)
-    VALUES(?,?,?,?,?,?)`;
-    const values = [title, description, priority, due_date, is_completed || false, is_complex || false];
+    const {title, description, priority, due_date, is_completed, is_complex, subtasks, position} = req.body;
+    const qTask = `INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex, position)
+    VALUES(?,?,?,?,?,?,?)`;
+    const values = [title, description, priority, due_date, is_completed || false, is_complex || false, position];
     
     db.query(qTask, values, (err, result) => {
         if (err) return res.status(500).json(err);
         const taskId = result.insertId;
-        const createdTask = {id: taskId, title, description, priority, due_date, is_completed, is_complex, subtasks};
+        const createdTask = {id: taskId, title, description, priority, due_date, is_completed, is_complex, subtasks, position};
         if (!is_complex || !subtasks || subtasks.length === 0){
             return res.status(201).json(createdTask);
         }

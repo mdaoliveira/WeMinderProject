@@ -8,6 +8,7 @@ function TarefasSimples({ onChange }) {
   const [description, setDescription] = useState("");
   const [due_date, setDueDate] = useState("");
   const [priority, setPriority] = useState("");
+  const [position, setPosition] = useState("");
 
   useEffect(() => {
     onChange({
@@ -15,8 +16,9 @@ function TarefasSimples({ onChange }) {
       description,
       due_date,
       priority: priority === "" ? "" : parseInt(priority),
+      position,
     });
-  }, [title, description, due_date, priority, onChange]);
+  }, [title, description, due_date, priority,position, onChange]);
 
   return (
     <div className="space-y-4">
@@ -74,8 +76,9 @@ function TarefasSimples({ onChange }) {
         ))}
       </div>
       <div className="space-y-2">
-        <input type="text" name="localizacao"></input>
-        <MapaInterativo></MapaInterativo>
+        <MapaInterativo
+          onPositionChange={(coords) => setPosition(coords.join(","))}
+        />
       </div>
     </div>
   );

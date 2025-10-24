@@ -15,40 +15,69 @@ L.Icon.Default.mergeOptions({
 function MapUpdater({ position }) {
   const map = useMap();
   useEffect(() => {
-    if (position) map.setView(position, 13); // centraliza quando position muda
+    if (position) {
+      console.log("MapUpdater: centralizando mapa em", position);
+      map.setView(position, 13); // centraliza quando position muda
+    }
   }, [position, map]);
   return null;
 }
 
-export default function MapaInterativo() {
+export default function MapaInterativo({ onPositionChange }) {
   const [query, setQuery] = useState("");
   const [position, setPosition] = useState([-23.55052, -46.633308]); // São Paulo padrão
 
   // Função para buscar local pelo nome usando Nominatim (OpenStreetMap)
   async function buscarLocal(e) {
-    e.preventDefault()
+    e.preventDefault();
     if (!query) return;
+
+    console.log("Buscando local:", query);
+
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          query
-        )}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            "User-Agent": "MeuAppTeste/1.0", // necessário para Nominatim
+            "Accept-Language": "pt-BR",
+          },
+        }
       );
+
+      console.log("Status da resposta da API:", res.status);
+
+      if (!res.ok) throw new Error(`Erro na requisição: ${res.status}`);
+
       const data = await res.json();
+      console.log("Dados recebidos da API:", data);
+
       if (data && data.length > 0) {
         const { lat, lon } = data[0];
-        setPosition([parseFloat(lat), parseFloat(lon)]);
+        const coords = [parseFloat(lat), parseFloat(lon)];
+        setPosition(coords);
+        console.log("Nova posição setada:", coords);
+
+        if (onPositionChange) {
+          onPositionChange(coords);
+          console.log("onPositionChange chamado com:", coords);
+        }
       } else {
         alert("Local não encontrado.");
       }
     } catch (err) {
       console.error("Erro ao buscar local:", err);
-      alert("Erro ao buscar local.");
+      alert("Erro ao buscar local. Verifique o console para detalhes.");
     }
   }
 
+  // Log sempre que a posição interna mudar
+  useEffect(() => {
+    console.log("Estado interno position atualizado:", position);
+  }, [position]);
+
   return (
-    <div className="h-[500px] flex flex-col items-center space-y-4 p-4 ">
+    <div className="h-[500px] flex flex-col items-center space-y-4 p-4">
       {/* Campo de busca */}
       <div className="flex w-full max-w-md space-x-2">
         <input

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import MapaInterativo from '../Mapa/Mapa';
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -8,6 +9,8 @@ function TarefasComplexas({ onChange }) {
   const [due_date, setNewDueDate] = useState("");
   const [priority, setPriority] = useState("");
   const [subtasks, setSubtasks] = useState([]);
+  const [position, setPosition] = useState("");
+  
 
   const adicionarSubtarefa = () => {
     setSubtasks([...subtasks, { title: "", description: "", due_date: "", priority: null}]);
@@ -20,8 +23,8 @@ function TarefasComplexas({ onChange }) {
   };
 
   useEffect(() => {
-    onChange?.({ title, description, due_date, priority: priority === "" ? "" : parseInt(priority), subtasks });
-  }, [title, description, due_date, priority, subtasks, onChange]);
+    onChange?.({ title, description, due_date, priority: priority === "" ? "" : parseInt(priority), subtasks, position });
+  }, [title, description, due_date, priority, subtasks,position, onChange]);
 
   return (
     <div className="space-y-4">
@@ -119,6 +122,11 @@ function TarefasComplexas({ onChange }) {
         </div>
         
       ))}
+      <div className="space-y-2">
+              <MapaInterativo
+                onPositionChange={(coords) => setPosition(coords.join(","))}
+              />
+            </div>
     </div>
   );
 }
