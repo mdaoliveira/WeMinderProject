@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import MapaInterativo from "../Mapa/Mapa";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -71,6 +72,10 @@ function TarefasSimples({ onChange }) {
             <span>{label}</span>
           </label>
         ))}
+      </div>
+      <div className="space-y-2">
+        <input type="text" name="localizacao"></input>
+        <MapaInterativo></MapaInterativo>
       </div>
     </div>
   );
