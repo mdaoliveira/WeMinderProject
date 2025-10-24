@@ -1,0 +1,29 @@
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: tarefas-mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: admin25
+            MYSQL_DATABASE: tarefas
+
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ../bd_script:/docker-entrypoint-initdb.d:ro
+        command: ["mysqld", "--default-authentication-plugin=mysql_native_password"]
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padmin25"]
+            interval: 5s
+            timeout: 3s
+            retries: 30
+
+    adminer:
+        image: adminer
+        ports:
+            - "8080:8080"
+        depends_on:
+            - mysql
+
+volumes:
+    mysql_data:
