@@ -1,23 +1,37 @@
 import { db } from "../database/db.js";
 
 export const getTasks = (req, res) => {
-    const qTasks = "SELECT * FROM tasks";
-    const qSubtasks = "SELECT * FROM subtasks";
+    const qSimpleTasks = "SELECT * FROM simpleTasks";
+    const qComplexTasks = "SELECT * FROM complexTasks";
+    const qSubtasks = "SELECT * FROM subTasks";
 
-    db.query(qTasks, (err, tasks) => {
-        if (err) return res.status(500).json("Erro de servidor!");
-        db.query(qSubtasks, (err2, subtasks) => {
-            if (err2) return res.status(500).json("Erro de servidor!");
-            const data = tasks.map((task) => {
-                const existSubtasks = subtasks.filter(
-                    (sub) => sub.parent_task_id === task.id
-                );
-                return { ...task, subtasks: existSubtasks };
+    db.query(qSimpleTasks, (errSimple, simpleTasks) => {
+        if (errSimple) return res.status(500).json("Erro de servidor!");
+
+        db.query(qComplexTasks, (errComplex, complexTasks) => {
+            if (errComplex) return res.status(500).json("Erro de servidor!");
+
+            db.query(qSubtasks, (errSub, subtasks) => {
+                if (errSub) return res.status(500).json("Erro de servidor!");
+
+                const complexWithSubtasks = complexTasks.map((task) => {
+                    const relatedSubtasks = subtasks.filter(
+                        (sub) => sub.parent_task_id === task.id
+                    );
+                    return { ...task, subtasks: relatedSubtasks };
+                });
+
+                const allTasks = [
+                    ...simpleTasks.map((t) => ({ ...t, type: "simple" })),
+                    ...complexWithSubtasks.map((t) => ({ ...t, type: "complex" })),
+                ];
+
+                return res.status(200).json(allTasks);
             });
-            return res.status(200).json(data);
-        });  
+        });
     });
-}
+};
+
 
 export const postTask = (req, res) => {
     const {title, description, priority, due_date, is_completed, is_complex, subtasks} = req.body;
