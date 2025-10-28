@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import MapaInterativo from "../Mapa/Mapa";
+import MapaInterativo, { BuscaLocal, handleBuscar } from "../Mapa/Mapa";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -78,6 +78,8 @@ function TarefasSimples({ onChange }) {
       <div className="space-y-2">
         <MapaInterativo
           onPositionChange={(coords) => setPosition(coords.join(","))}
+          mostrarBotao={true}
+
         />
       </div>
     </div>

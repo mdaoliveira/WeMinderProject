@@ -6,6 +6,7 @@ import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
 import Tasks from './components/Tasks/Tasks';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import MapaInterativo from './components/Mapa/Mapa';
 
 function AppContent() {
   const [modalOpen, setModalIsOpen] = useState(false);
@@ -101,6 +102,7 @@ function AppContent() {
                 ))}
               </div>
             )}
+            <MapaInterativo mostrarBotao={false} localSalvo={itemClicked.position} ></MapaInterativo>
 
             <div className="flex justify-between items-center pt-4">
               <button

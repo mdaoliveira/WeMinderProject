@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -11,100 +11,92 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-// Componente que atualiza a posição do mapa
+// Atualiza a posição do mapa sempre que a posição mudar
 function MapUpdater({ position }) {
   const map = useMap();
-  useEffect(() => {
-    if (position) {
-      console.log("MapUpdater: centralizando mapa em", position);
-      map.setView(position, 13); // centraliza quando position muda
-    }
-  }, [position, map]);
+  if (position) map.setView(position, 13);
   return null;
 }
 
-export default function MapaInterativo({ onPositionChange }) {
+// 🔹 Componente do botão de busca separado e reutilizável
+export function BuscaLocal({ onBuscar }) {
   const [query, setQuery] = useState("");
-  const [position, setPosition] = useState([-23.55052, -46.633308]); // São Paulo padrão
 
-  // Função para buscar local pelo nome usando Nominatim (OpenStreetMap)
-  async function buscarLocal(e) {
-    e.preventDefault();
-    if (!query) return;
-
-    console.log("Buscando local:", query);
+  async function handleBuscar(e) {
+    if (!query.trim()) return;
+      e.preventDefault();
 
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
-        {
-          headers: {
-            "User-Agent": "MeuAppTeste/1.0", // necessário para Nominatim
-            "Accept-Language": "pt-BR",
-          },
-        }
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          query
+        )}&format=json`
       );
-
-      console.log("Status da resposta da API:", res.status);
-
-      if (!res.ok) throw new Error(`Erro na requisição: ${res.status}`);
-
-      const data = await res.json();
-      console.log("Dados recebidos da API:", data);
-
+      const data = await response.json();
       if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const coords = [parseFloat(lat), parseFloat(lon)];
-        setPosition(coords);
-        console.log("Nova posição setada:", coords);
-
-        if (onPositionChange) {
-          onPositionChange(coords);
-          console.log("onPositionChange chamado com:", coords);
-        }
+        const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        onBuscar(coords, query);
       } else {
-        alert("Local não encontrado.");
+        alert("Local não encontrado!");
       }
-    } catch (err) {
-      console.error("Erro ao buscar local:", err);
-      alert("Erro ao buscar local. Verifique o console para detalhes.");
+    } catch (error) {
+      console.error("Erro ao buscar local:", error);
     }
   }
 
-  // Log sempre que a posição interna mudar
-  useEffect(() => {
-    console.log("Estado interno position atualizado:", position);
-  }, [position]);
-
   return (
-    <div className="h-[500px] flex flex-col items-center space-y-4 p-4">
-      {/* Campo de busca */}
-      <div className="flex w-full max-w-md space-x-2">
-        <input
-          type="text"
-          placeholder="Digite um endereço..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={buscarLocal}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+    <div className="flex gap-2 w-full max-w-md">
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Digite um local"
+        className="flex-1 p-2 border rounded-lg"
+      />
+      <button
+          onClick={(e) => handleBuscar(e)} // 🔹 passa o evento corretamente
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
         >
           Buscar
         </button>
-      </div>
+    </div>
+  );
+}
 
-      {/* Container do mapa */}
-      <div className="w-full flex-1 rounded-xl overflow-hidden shadow-lg">
-        <MapContainer center={position} zoom={13} className="h-full w-full">
+// 🔹 Componente principal do mapa
+export default function MapaInterativo({
+  onPositionChange,
+  localSalvo = null,      // coordenadas vindas do banco ou outro fetch
+  mostrarBotao = false
+}) {
+  // Se existir localSalvo, inicia com ele; senão null
+  const [position, setPosition] = useState(localSalvo);
+  const [query, setQuery] = useState("");
+
+  // Função chamada pelo botão de busca
+  function handleBuscar(coords, localQuery) {
+    setPosition(coords);
+    setQuery(localQuery);
+    if (onPositionChange) onPositionChange(coords);
+  }
+
+  return (
+    <div className="flex flex-col items-center space-y-4 p-4 h-[500px]">
+      {mostrarBotao && <BuscaLocal onBuscar={handleBuscar} />}
+
+      <div className="w-full h-[400px] rounded-xl overflow-hidden shadow-lg">
+        <MapContainer
+          center={position || [-23.55052, -46.633308]} // padrão se não houver coordenadas externas
+          zoom={13}
+          className="h-full w-full"
+        >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; OpenStreetMap contributors"
           />
           {position && (
             <Marker position={position}>
-              <Popup>📍 {query || "Local atual"}</Popup>
+              <Popup>📍 {query || "Local da tarefa"}</Popup>
             </Marker>
           )}
           <MapUpdater position={position} />
