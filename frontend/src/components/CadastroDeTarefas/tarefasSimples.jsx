@@ -76,11 +76,16 @@ function TarefasSimples({ onChange }) {
         ))}
       </div>
       <div className="space-y-2">
-        <MapaInterativo
-          onPositionChange={(coords) => setPosition(coords.join(","))}
-          mostrarBotao={true}
+      <MapaInterativo
+         // já como [lat, lng] ou null
+        mostrarBotao={true}
+        onPositionChange={(coords) => {
+          // ✅ protege contra null
+          const posicao = coords && coords.length === 2 ? coords.join(",") : null;
+          
+        }}
+      />
 
-        />
       </div>
     </div>
   );

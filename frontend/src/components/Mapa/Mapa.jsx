@@ -23,8 +23,8 @@ export function BuscaLocal({ onBuscar }) {
   const [query, setQuery] = useState("");
 
   async function handleBuscar(e) {
+    e.preventDefault(); // 🔹 sempre no início
     if (!query.trim()) return;
-      e.preventDefault();
 
     try {
       const response = await fetch(
@@ -45,7 +45,7 @@ export function BuscaLocal({ onBuscar }) {
   }
 
   return (
-    <div className="flex gap-2 w-full max-w-md">
+    <div className="flex gap-2 w-full max-w-md mb-4">
       <input
         type="text"
         value={query}
@@ -54,11 +54,11 @@ export function BuscaLocal({ onBuscar }) {
         className="flex-1 p-2 border rounded-lg"
       />
       <button
-          onClick={(e) => handleBuscar(e)} // 🔹 passa o evento corretamente
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-        >
-          Buscar
-        </button>
+        onClick={handleBuscar}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+      >
+        Buscar
+      </button>
     </div>
   );
 }
@@ -66,7 +66,7 @@ export function BuscaLocal({ onBuscar }) {
 // 🔹 Componente principal do mapa
 export default function MapaInterativo({
   onPositionChange,
-  localSalvo = null,      // coordenadas vindas do banco ou outro fetch
+  localSalvo = null, // deve vir como [lat, lng] ou null
   mostrarBotao = false
 }) {
   // Se existir localSalvo, inicia com ele; senão null
@@ -77,12 +77,30 @@ export default function MapaInterativo({
   function handleBuscar(coords, localQuery) {
     setPosition(coords);
     setQuery(localQuery);
-    if (onPositionChange) onPositionChange(coords);
+    if (onPositionChange) onPositionChange(coords); // pai deve tratar null
+  }
+
+  // Função para apagar a posição do marcador
+  function handleLimparMarcador() {
+    setPosition(null);
+    setQuery("");
+    if (onPositionChange) onPositionChange(null); // envia null
   }
 
   return (
     <div className="flex flex-col items-center space-y-4 p-4 h-[500px]">
+      {/* Botão de busca opcional */}
       {mostrarBotao && <BuscaLocal onBuscar={handleBuscar} />}
+
+      {/* Botão para limpar o marcador */}
+      {position && (
+        <button
+          onClick={handleLimparMarcador}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+        >
+          Apagar Marcador
+        </button>
+      )}
 
       <div className="w-full h-[400px] rounded-xl overflow-hidden shadow-lg">
         <MapContainer

@@ -57,7 +57,24 @@ function AppContent() {
   1: "Prioridade Alta",
   2: "Prioridade Média",
   3: "Prioridade Baixa"
-};
+  }
+  let coordenadas = null;
+
+if (itemClicked && itemClicked.position && typeof itemClicked.position === "string") {
+  const parts = itemClicked.position.split(",").map((v) => v.trim());
+  if (parts.length === 2) {
+    const lat = parseFloat(parts[0]);
+    const lng = parseFloat(parts[1]);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      coordenadas = [lat, lng];
+    }
+  }
+}
+
+  
+
+
+
 
   return (
     <div className="App flex">
@@ -102,7 +119,14 @@ function AppContent() {
                 ))}
               </div>
             )}
-            <MapaInterativo mostrarBotao={false} localSalvo={itemClicked.position} ></MapaInterativo>
+            <MapaInterativo
+              localSalvo={coordenadas} // já como [lat, lng] ou null
+              mostrarBotao={true}
+              onPositionChange={(coords) => {
+                const posicao = coords && coords.length === 2 ? coords.join(",") : null;
+              }}
+            />
+
 
             <div className="flex justify-between items-center pt-4">
               <button
