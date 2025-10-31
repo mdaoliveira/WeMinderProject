@@ -16,6 +16,10 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
         const dataA = new Date(a.due_date);
         const dataB = new Date(b.due_date);
 
+        
+
+
+
         if (dataA.getTime() !== dataB.getTime()) {
           return dataA - dataB;
         }
