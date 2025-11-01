@@ -63,6 +63,23 @@ export const postTask = (req, res) => {
             if (!is_complex || !subtasks || subtasks.length === 0) {
                 return res.status(201).json(createdTask);
             }
+        });
+        // subtarefas
+        const qSubtask = `INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
+            VALUES ?`;
+
+        const subtaskValues = subtasks.map((sub) => [
+            taskId,
+            sub.title,
+            sub.description || null,
+            sub.priority,
+            sub.due_date,
+            sub.is_completed || false,
+        ]);
+
+        db.query(qSubtask, [subtaskValues], (err2) => {
+            if (err2) return res.status(500).json(err2);
+            return res.status(201).json(createdTask);
         });      
     }
     else{
