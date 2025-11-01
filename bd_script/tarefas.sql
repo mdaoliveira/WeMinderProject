@@ -15,7 +15,8 @@ CREATE TABLE simpleTasks (
     description TEXT,
     priority INTEGER CHECK(priority BETWEEN 0 AND 3),
     due_date DATE,
-    is_completed BOOLEAN DEFAULT FALSE
+    is_completed BOOLEAN DEFAULT FALSE,
+    position VARCHAR(45) DEFAULT NULL
 );
 -- Criar tabela de tarefas complexas
 CREATE TABLE complexTasks (
@@ -24,7 +25,8 @@ CREATE TABLE complexTasks (
     description TEXT,
     priority INTEGER CHECK(priority BETWEEN 0 AND 3),
     due_date DATE,
-    is_completed BOOLEAN DEFAULT FALSE
+    is_completed BOOLEAN DEFAULT FALSE,
+    position VARCHAR(45) DEFAULT NULL
 );
 -- Criar tabela de subtarefas
 CREATE TABLE subtasks (
