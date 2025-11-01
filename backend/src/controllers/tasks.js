@@ -35,15 +35,18 @@ export const getTasks = (req, res) => {
 export const postTask = (req, res) => {
     const { title, description, priority, due_date, is_completed, is_complex, subtasks, position } =
         req.body;
-    const qTask = `INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex, position)
-    VALUES(?,?,?,?,?,?,?)`;
+        const qTask = `INSERT INTO simpleTasks (title, description, priority, due_date, is_completed, position)
+        VALUES(?,?,?,?,?,?)`;
+        if(is_complex){
+            qTask = `INSERT INTO complexTasks (title, description, priority, due_date, is_completed, position)
+            VALUES(?,?,?,?,?,?)`;        
+        }
     const values = [
         title,
         description,
         priority,
         due_date,
         is_completed || false,
-        is_complex || false,
         position,
     ];
 
@@ -57,7 +60,6 @@ export const postTask = (req, res) => {
             priority,
             due_date,
             is_completed,
-            is_complex,
             subtasks,
             position,
         };
@@ -87,25 +89,51 @@ export const postTask = (req, res) => {
 
 export const deleteTask = (req, res) => {
     const taskId = req.params.id;
-    const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
-
-    db.query(deleteSubtasksQ, [taskId], (err) => {
+    const taskSub = req.params.subtasks;
+    if(taskSub){
+        const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
+        db.query(deleteSubtasksQ, [taskId], (err) => {
         if (err) return res.sendStatus(500);
-        const deleteTaskQ = "DELETE FROM tasks WHERE id = ?";
+        const deleteTaskQ = "DELETE FROM complexTasks WHERE id = ?";
 
         db.query(deleteTaskQ, [taskId], (err2) => {
             if (err2) return res.sendStatus(500);
             return res.status(200).json({ message: "Tarefa excluída com sucesso" });
         });
     });
+    }
+
+    const deleteTaskQ = "DELETE FROM simpleTasks WHERE id = ?";
+
+    db.query(deleteTaskQ, [taskId], (err2) => {
+    if (err2) return res.sendStatus(500);
+        return res.status(200).json({ message: "Tarefa excluída com sucesso" });
+    });
 };
 
 export const editTask = (req, res) => {
     const taskId = req.params.id;
-    const { title, description, priority, due_date, is_completed, is_complex } = req.body;
+    const { title, description, priority, due_date, is_completed, subtarefas } = req.body;
 
+    if (subtarefas.length>0){
+        const updateTaskQ = `
+            UPDATE complexTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
+            WHERE id=?
+        `;
+        const taskValues = [
+        title,
+        description,
+        priority,
+        due_date,
+        is_completed || false,
+        taskId,
+        ];
+        db.query(updateTaskQ, taskValues, (err) => {
+            if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+        });
+    }
     const updateTaskQ = `
-        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, is_complex=?
+        UPDATE simpleTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
         WHERE id=?
     `;
     const taskValues = [
@@ -114,15 +142,11 @@ export const editTask = (req, res) => {
         priority,
         due_date,
         is_completed || false,
-        is_complex || false,
         taskId,
     ];
-
     db.query(updateTaskQ, taskValues, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
-
-        if (!is_complex || !Array.isArray(subtasks)) {
-            return res.status(200).json({ message: "Tarefa atualizada com sucesso" });
-        }
     });
+
+
 };

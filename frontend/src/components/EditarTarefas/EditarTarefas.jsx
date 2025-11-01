@@ -25,6 +25,7 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
             due_date: newData,
             priority: prioridade,
             is_completed: false,
+            subtarefas: subtarefas
         };
 
         const response = await fetch(`http://localhost:8800/tarefas/${itemClicked.id}`, {
