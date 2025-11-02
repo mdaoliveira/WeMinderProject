@@ -96,6 +96,8 @@ function AppContent() {
               </p>
             <p><strong>Prioridade: </strong>{priorityLabels[itemClicked.priority]}</p>
 
+            <p><strong>Repete diariamente: </strong>{itemClicked.is_daily ? "Sim" : "Não"}</p>
+
               {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
                 <div className="mt-6">
                   <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">

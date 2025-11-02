@@ -15,7 +15,8 @@ CREATE TABLE tasks (
     priority INTEGER CHECK(priority BETWEEN 0 AND 3),
     due_date DATE,
     is_completed BOOLEAN DEFAULT FALSE,
-    is_complex BOOLEAN DEFAULT FALSE
+    is_complex BOOLEAN DEFAULT FALSE,
+    is_daily BOOLEAN DEFAULT FALSE
 );
 
 -- Criar tabela de subtarefas
@@ -31,22 +32,22 @@ CREATE TABLE subtasks (
 );
 
 -- Inserir 15 tarefas (simples e complexas)
-INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex) VALUES
-('Ler capítulo 1', 'Ler o primeiro capítulo do livro X', 1, '2025-06-01', FALSE, FALSE),
-('Fazer caminhada', 'Caminhada de 30 minutos no parque', 2, '2025-06-02', TRUE, FALSE),
-('Estudar SQL', 'Revisar comandos básicos e avançados de SQL', 1, '2025-06-05', FALSE, FALSE),
-('Limpar o quarto', 'Organizar livros, roupas e aspirar o chão', 2, '2025-06-03', TRUE, FALSE),
-('Assistir documentário', 'Assistir ao episódio sobre IA', 0, '2025-06-07', FALSE, FALSE),
-('Desenvolver app React', 'Criar um aplicativo em React com autenticação', 1, '2025-06-10', FALSE, TRUE),
-('Projeto de estatística', 'Montar gráficos e análises descritivas', 2, '2025-06-12', FALSE, TRUE),
-('Preparar apresentação', 'Montar slides para apresentação de TCC', 1, '2025-06-15', FALSE, TRUE),
-('Revisar redação', 'Corrigir erros e melhorar argumentos', 1, '2025-06-08', TRUE, FALSE),
-('Fazer compras', 'Lista: arroz, leite, frutas e pão', 2, '2025-06-05', TRUE, FALSE),
-('Treinar lógica', 'Resolver 10 exercícios de lógica', 2, '2025-06-06', FALSE, FALSE),
-('Escrever artigo', 'Artigo sobre segurança da informação', 1, '2025-06-20', FALSE, TRUE),
-('Organizar arquivos', 'Classificar documentos no Google Drive', 0, '2025-06-04', FALSE, FALSE),
-('Praticar inglês', 'Estudar gramática e assistir vídeo', 1, '2025-06-09', FALSE, FALSE),
-('Configurar servidor', 'Instalar e configurar Apache ou Nginx', 1, '2025-06-18', FALSE, TRUE);
+INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex, is_daily) VALUES
+('Ler capítulo 1', 'Ler o primeiro capítulo do livro X', 1, '2025-06-01', FALSE, FALSE, FALSE),
+('Fazer caminhada', 'Caminhada de 30 minutos no parque', 2, '2025-06-02', TRUE, FALSE, FALSE),
+('Estudar SQL', 'Revisar comandos básicos e avançados de SQL', 1, '2025-06-05', FALSE, FALSE, FALSE),
+('Limpar o quarto', 'Organizar livros, roupas e aspirar o chão', 2, '2025-06-03', TRUE, FALSE, FALSE),
+('Assistir documentário', 'Assistir ao episódio sobre IA', 0, '2025-06-07', FALSE, FALSE, FALSE),
+('Desenvolver app React', 'Criar um aplicativo em React com autenticação', 1, '2025-06-10', FALSE, TRUE, FALSE),
+('Projeto de estatística', 'Montar gráficos e análises descritivas', 2, '2025-06-12', FALSE, TRUE, FALSE),
+('Preparar apresentação', 'Montar slides para apresentação de TCC', 1, '2025-06-15', FALSE, TRUE, FALSE),
+('Revisar redação', 'Corrigir erros e melhorar argumentos', 1, '2025-06-08', TRUE, FALSE, FALSE),
+('Fazer compras', 'Lista: arroz, leite, frutas e pão', 2, '2025-06-05', TRUE, FALSE, FALSE),
+('Treinar lógica', 'Resolver 10 exercícios de lógica', 2, '2025-06-06', FALSE, FALSE, FALSE),
+('Escrever artigo', 'Artigo sobre segurança da informação', 1, '2025-06-20', FALSE, TRUE, FALSE),
+('Organizar arquivos', 'Classificar documentos no Google Drive', 0, '2025-06-04', FALSE, FALSE, FALSE),
+('Praticar inglês', 'Estudar gramática e assistir vídeo', 1, '2025-06-09', FALSE, FALSE, FALSE),
+('Configurar servidor', 'Instalar e configurar Apache ou Nginx', 1, '2025-06-18', FALSE, TRUE, FALSE);
 
 -- Inserir 15 subtarefas associadas a tarefas complexas
 INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed) VALUES
