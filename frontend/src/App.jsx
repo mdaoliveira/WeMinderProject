@@ -5,8 +5,10 @@ import CadastroDeTarefas from './components/CadastroDeTarefas/cadastroDeTarefas'
 import EditarTarefas from './components/EditarTarefas/EditarTarefas';
 import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
 import Tasks from './components/Tasks/Tasks';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
+
 
 function AppContent() {
   const [modalOpen, setModalIsOpen] = useState(false);
@@ -57,7 +59,10 @@ function AppContent() {
   1: "Prioridade Alta",
   2: "Prioridade Média",
   3: "Prioridade Baixa"
-};
+  };
+
+  const contentRef = useRef(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
 
   return (
     <div className="App flex">
@@ -67,7 +72,8 @@ function AppContent() {
         exibirClick={exibirClicked}
       />
 
-      <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
+      <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900" ref={contentRef}>
+        <img src="/images/print%20symbol.png" style={{ height: 70, cursor: 'pointer' }} onClick={reactToPrintFn}></img>
         {/* Modal de Cadastro */}
         {modalOpen && modalType === 'cadastro' && (
           <div className="modal-show">
