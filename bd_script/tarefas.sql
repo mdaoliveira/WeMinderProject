@@ -78,3 +78,12 @@ INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is
 (1, 'Instalar sistema', 'Instalar Ubuntu Server', 1, '2025-06-15', TRUE),
 (1, 'Configurar rede', 'IP estático e firewall', 2, '2025-06-16', FALSE),
 (1, 'Testar acesso', 'Acesso externo via SSH', 1, '2025-06-18', FALSE);
+
+-- Criar tabela de usuários
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

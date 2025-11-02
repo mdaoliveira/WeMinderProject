@@ -5,17 +5,27 @@ import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas"
 import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Tasks from "./components/Tasks/Tasks";
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
-
+import SignupAndLogin from "./components/SignupAndLogin/SignupAndLogin";
 function AppContent() {
     const [modalOpen, setModalIsOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [itemClicked, setItemClicked] = useState(null);
     const [reloadCount, setReloadCount] = useState(0);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const navigate = useNavigate();
+
+    // verifica se o usuário está autenticado
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
 
     function clicked(item) {
         setModalIsOpen(true);
@@ -71,6 +81,12 @@ function AppContent() {
             }
         }
     }
+
+    // Se não estiver autenticado, vai para a página de login
+  if (!isAuthenticated) {
+    return <Navigate to="/SignupAndLogin" replace/>;
+  }
+
 
     return (
         <div className="App flex">
@@ -200,6 +216,12 @@ function AppContent() {
                     <Route
                         path="/exibir"
                         element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+
+                    <Route
+                        path="/SignupAndLogin"
+                        element={<SignupAndLogin onTaskClicked={clicked} reloadPage={reloadCount} />}
+                        
                     />
                 </Routes>
             </main>
