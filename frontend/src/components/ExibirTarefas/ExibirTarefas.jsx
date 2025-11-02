@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Card from "../card/card";
 
 const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
   const [data, setData] = useState([]);
@@ -65,37 +66,7 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
         if (deveExibirData) ultimaDataExibida = dataFormatada;
 
         return (
-          <React.Fragment key={tarefa.id}>
-            {/* const tarefasPrioridade = {tarefa.priority} */}
-            {deveExibirData && (
-              <h1 className="text-gray-700 dark:text-gray-300 text-lg font-bold mt-6 mb-2 w-full max-w-xl text-left">
-                {dataFormatada}
-              </h1>
-            )}
-            <div
-              className="bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6 w-full max-w-xl flex justify-between items-center cursor-pointer"
-              onClick={() => onTaskClicked(tarefa)}
-            >
-              <div className="flex flex-col max-w-[85%]">
-                <h2 className="text-gray-900 dark:text-gray-100 font-semibold text-lg mb-2 truncate">
-                  Título: {tarefa.title}
-                </h2>
-                <p className="text-gray-700 dark:text-gray-300 truncate">
-                  Descrição: {tarefa.description}
-                </p>
-              </div>
-
-              <img
-                src="/images/olho.png"
-                alt="Mais informações"
-                className="h-8 w-8 cursor-pointer ml-4"
-                onClick={(e) => {
-                  e.stopPropagation(); // evitar disparar onClick do card
-                  onTaskClicked(tarefa);
-                }}
-              />
-            </div>
-          </React.Fragment>
+          Card(tarefa,onTaskClicked)
         );
       })}
     </div>
