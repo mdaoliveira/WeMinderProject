@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas";
 import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
+import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
@@ -36,6 +37,10 @@ function AppContent() {
 
     function exibirClicked() {
         navigate("/exibir");
+    }
+
+    function agendaClicked() {
+        navigate("/agenda");
     }
 
     function inicioClicked() {
@@ -78,8 +83,8 @@ function AppContent() {
                 inicioClick={inicioClicked}
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
+                agendaClick={agendaClicked}
             />
-
             <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
                 {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
@@ -92,6 +97,7 @@ function AppContent() {
                     </div>
                 )}
 
+                {/* Modal de Detalhes */}
                 {modalOpen && modalType === "detalhes" && itemClicked && (
                     <div className="modal-show">
                         <div className="modal-content">
@@ -154,7 +160,7 @@ function AppContent() {
                                     Fechar
                                 </button>
                                 <button
-                                    onClick={() => ExcluirTarefas(itemClicked.id, itemClicked.subtasks)}
+                                    onClick={() => ExcluirTarefas(itemClicked.id)}
                                     className="bg-red-600 hover:bg-red-700 transition text-white font-semibold px-4 py-2 rounded"
                                 >
                                     Excluir
@@ -171,7 +177,7 @@ function AppContent() {
                             </div>
 
                             <MapaInterativo
-                                localSalvo={coordenadas} // já como [lat, lng] ou null
+                                localSalvo={coordenadas}
                                 mostrarBotao={true}
                                 onPositionChange={(coords) => {
                                     // Posição pode ser atualizada aqui no futuro se necessário
@@ -200,6 +206,10 @@ function AppContent() {
                     <Route
                         path="/exibir"
                         element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+                    <Route
+                        path="/agenda"
+                        element={<Agenda onTaskClicked={clicked} reloadPage={reloadCount} />}
                     />
                 </Routes>
             </main>
