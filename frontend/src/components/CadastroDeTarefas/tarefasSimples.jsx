@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import MapaInterativo, { BuscaLocal, handleBuscar } from "../Mapa/Mapa";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -7,6 +8,7 @@ function TarefasSimples({ onChange }) {
   const [description, setDescription] = useState("");
   const [due_date, setDueDate] = useState("");
   const [priority, setPriority] = useState("");
+  const [position, setPosition] = useState("");
 
   useEffect(() => {
     onChange({
@@ -14,8 +16,9 @@ function TarefasSimples({ onChange }) {
       description,
       due_date,
       priority: priority === "" ? "" : parseInt(priority),
+      position,
     });
-  }, [title, description, due_date, priority, onChange]);
+  }, [title, description, due_date, priority,position, onChange]);
 
   return (
     <div className="space-y-4">
@@ -71,6 +74,18 @@ function TarefasSimples({ onChange }) {
             <span>{label}</span>
           </label>
         ))}
+      </div>
+      <div className="space-y-2">
+      <MapaInterativo
+         // já como [lat, lng] ou null
+        mostrarBotao={true}
+        onPositionChange={(coords) => {
+          // ✅ protege contra null
+          const posicao = coords && coords.length === 2 ? coords.join(",") : null;
+          
+        }}
+      />
+
       </div>
     </div>
   );

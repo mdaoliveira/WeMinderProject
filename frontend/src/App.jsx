@@ -2,11 +2,13 @@ import "./index.css";
 import "./App.css";
 import Sidebar from "./components/Sidebar/Sidebar";
 import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas";
+import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import MapaInterativo from "./components/Mapa/Mapa";
 
 function AppContent() {
     const [modalOpen, setModalIsOpen] = useState(false);
@@ -62,6 +64,18 @@ function AppContent() {
         2: "Prioridade Média",
         3: "Prioridade Baixa",
     };
+    let coordenadas = null;
+
+    if (itemClicked && itemClicked.position && typeof itemClicked.position === "string") {
+        const parts = itemClicked.position.split(",").map((v) => v.trim());
+        if (parts.length === 2) {
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                coordenadas = [lat, lng];
+            }
+        }
+    }
 
     return (
         <div className="App flex">
@@ -72,7 +86,7 @@ function AppContent() {
                 agendaClick={agendaClicked}
             />
             <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
-                {/* MODAL DE CADASTRO */}
+                {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
                     <div className="modal-show">
                         <CadastroDeTarefas
@@ -138,9 +152,8 @@ function AppContent() {
                                 </div>
                             )}
 
-                            <div className="flex justify-between items-center pt-4">
+                            <div className="flex justify-between items-center pt-4 gap-4">
                                 <button
-                                    type="button"
                                     onClick={closeModal}
                                     className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
                                 >
@@ -152,8 +165,36 @@ function AppContent() {
                                 >
                                     Excluir
                                 </button>
+                                <button
+                                    onClick={() => {
+                                        setModalType("editar");
+                                        setModalIsOpen(true);
+                                    }}
+                                    className="bg-blue-600 hover:bg-blue-700 transition text-white font-semibold px-4 py-2 rounded"
+                                >
+                                    Editar
+                                </button>
                             </div>
+
+                            <MapaInterativo
+                                localSalvo={coordenadas}
+                                mostrarBotao={true}
+                                onPositionChange={(coords) => {
+                                    // Posição pode ser atualizada aqui no futuro se necessário
+                                }}
+                            />
                         </div>
+                    </div>
+                )}
+
+                {/* Modal de Edição */}
+                {modalOpen && modalType === "editar" && itemClicked && (
+                    <div className="modal-show">
+                        <EditarTarefas
+                            itemClicked={itemClicked}
+                            closeModal={closeModal}
+                            setReloadCount={setReloadCount}
+                        />
                     </div>
                 )}
 
