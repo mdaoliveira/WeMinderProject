@@ -63,24 +63,24 @@ export const postTask = (req, res) => {
             if (!is_complex || !subtasks || subtasks.length === 0) {
                 return res.status(201).json(createdTask);
             }
+            // subtarefas
+            const qSubtask = `INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
+                VALUES ?`;
+    
+            const subtaskValues = subtasks.map((sub) => [
+                taskId,
+                sub.title,
+                sub.description || null,
+                sub.priority,
+                sub.due_date,
+                sub.is_completed || false,
+            ]);
+    
+            db.query(qSubtask, [subtaskValues], (err2) => {
+                if (err2) return res.status(500).json(err2);
+                return res.status(201).json(createdTask);
+            });      
         });
-        // subtarefas
-        const qSubtask = `INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
-            VALUES ?`;
-
-        const subtaskValues = subtasks.map((sub) => [
-            taskId,
-            sub.title,
-            sub.description || null,
-            sub.priority,
-            sub.due_date,
-            sub.is_completed || false,
-        ]);
-
-        db.query(qSubtask, [subtaskValues], (err2) => {
-            if (err2) return res.status(500).json(err2);
-            return res.status(201).json(createdTask);
-        });      
     }
     else{
         const qTask = `INSERT INTO simpleTasks (title, description, priority, due_date, is_completed, position)
@@ -109,17 +109,18 @@ export const postTask = (req, res) => {
 export const deleteTask = (req, res) => {
     const taskId = req.params.id;
     const taskSub = req.params.subtasks;
+    console.log(taskSub);
     if(taskSub){
         const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
         db.query(deleteSubtasksQ, [taskId], (err) => {
-        if (err) return res.sendStatus(500);
-        const deleteTaskQ = "DELETE FROM complexTasks WHERE id = ?";
+            if (err) return res.sendStatus(500);
+            const deleteTaskQ = "DELETE FROM complexTasks WHERE id = ?";
 
-        db.query(deleteTaskQ, [taskId], (err2) => {
-            if (err2) return res.sendStatus(500);
-            return res.status(200).json({ message: "Tarefa excluída com sucesso" });
+            db.query(deleteTaskQ, [taskId], (err2) => {
+                if (err2) return res.sendStatus(500);
+                return res.status(200).json({ message: "Tarefa excluída com sucesso" });
+            });
         });
-    });
     }
     else{
         const deleteTaskQ = "DELETE FROM simpleTasks WHERE id = ?";
