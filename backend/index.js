@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import taskRoutes from "./src/routes/tasks.js";
 import cors from "cors";
 
