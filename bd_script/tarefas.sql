@@ -30,6 +30,19 @@ CREATE TABLE subtasks (
     FOREIGN KEY (parent_task_id) REFERENCES tasks(id)
 );
 
+-- tabela de personalização
+CREATE TABLE IF NOT EXISTS personalizacao (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    text_color VARCHAR(20),
+    sidebar_color VARCHAR(20),
+    background_color VARCHAR(20),
+    card_color VARCHAR(20),
+    card_position VARCHAR(20)
+);
+
+INSERT INTO personalizacao (text_color, sidebar_color, background_color, card_color, card_position)
+VALUES ('#1d4ed8', '#f3f4f6', '#f3f4f6', '#ffffff', 'lista');
+
 -- Inserir 15 tarefas (simples e complexas)
 INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex) VALUES
 ('Ler capítulo 1', 'Ler o primeiro capítulo do livro X', 1, '2025-06-01', FALSE, FALSE),

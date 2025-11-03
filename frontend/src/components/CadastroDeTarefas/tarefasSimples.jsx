@@ -19,13 +19,13 @@ function TarefasSimples({ onChange }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Criar Tarefa Simples</h2>
+      <h2 className="text-xl font-semibold text-[color:var(--text-color)] dark:text-gray-100">Criar Tarefa Simples</h2>
 
       <div className="space-y-2">
         <label className="block font-medium">Título</label>
         <input
           type="text"
-          className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+          className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -35,7 +35,7 @@ function TarefasSimples({ onChange }) {
         <label className="block font-medium">Descrição</label>
         <input
           type="text"
-          className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+          className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -46,7 +46,7 @@ function TarefasSimples({ onChange }) {
         <input
           type="date"
           min={today}
-          className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+          className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={due_date}
           onChange={(e) => setDueDate(e.target.value)}
         />

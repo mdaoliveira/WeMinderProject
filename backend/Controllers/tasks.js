@@ -70,86 +70,20 @@ export const deleteTask = (req, res) => {
 };
 
 
-// export const putTask = (req, res) => {
-//     const taskId = req.params.id;
-//     const {
-//         title,
-//         description,
-//         priority,
-//         due_date,
-//         is_completed,
-//         is_complex,
-//         subtasks
-//     } = req.body;
+export const getColor = (req, res) => {
+    const q = "SELECT text_color, sidebar_color, background_color, card_color, card_position FROM personalizacao WHERE id = 1";
+    db.query(q, (err, results) => {
+        if (err) return res.status(500);
+        res.json({color: results[0].text_color, sidebar: results[0].sidebar_color, 
+            background: results[0].background_color, card: results[0].card_color, card_position: results[0].card_position});
+    });
+};
 
-//     // Atualiza a tarefa principal
-//     const updateTaskQ = `
-//         UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, is_complex=?
-//         WHERE id=?
-//     `;
-//     const taskValues = [title, description, priority, due_date, is_completed || false, is_complex || false, taskId];
-
-//     db.query(updateTaskQ, taskValues, (err) => {
-//         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
-
-//         // Se for tarefa simples, retorna
-//         if (!is_complex) {
-//             return res.status(200).json({ message: "Tarefa simples atualizada com sucesso" });
-//         }
-
-//         // Se não tiver subtarefas, retorna também
-//         if (!Array.isArray(subtasks)) {
-//             return res.status(200).json({ message: "Tarefa complexa atualizada sem subtarefas" });
-//         }
-
-//         // Processa subtarefas em série (sem promises)
-//         const processSubtasks = (index = 0) => {
-//             if (index >= subtasks.length) {
-//                 return res.status(200).json({ message: "Tarefa complexa e subtarefas atualizadas com sucesso" });
-//             }
-
-//             const sub = subtasks[index];
-
-//             if (sub.id) {
-//                 // UPDATE subtarefa existente
-//                 const updateSubtaskQ = `
-//                     UPDATE subtasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
-//                     WHERE id=? AND parent_task_id=?
-//                 `;
-//                 const values = [
-//                     sub.title,
-//                     sub.description || null,
-//                     sub.priority,
-//                     sub.due_date,
-//                     sub.is_completed || false,
-//                     sub.id,
-//                     taskId
-//                 ];
-//                 db.query(updateSubtaskQ, values, (err2) => {
-//                     if (err2) return res.status(500).json({ message: "Erro ao atualizar subtarefa", error: err2 });
-//                     processSubtasks(index + 1);
-//                 });
-//             } else {
-//                 // INSERT nova subtarefa
-//                 const insertSubtaskQ = `
-//                     INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
-//                     VALUES (?, ?, ?, ?, ?, ?)
-//                 `;
-//                 const values = [
-//                     taskId,
-//                     sub.title,
-//                     sub.description || null,
-//                     sub.priority,
-//                     sub.due_date,
-//                     sub.is_completed || false
-//                 ];
-//                 db.query(insertSubtaskQ, values, (err3) => {
-//                     if (err3) return res.status(500).json({ message: "Erro ao inserir nova subtarefa", error: err3 });
-//                     processSubtasks(index + 1);
-//                 });
-//             }
-//         };
-
-//         processSubtasks();
-//     });
-// };
+export const updateColor = (req, res) => {
+    const { color, sidebar, background, card, card_position} = req.body;
+    const q = "UPDATE personalizacao SET text_color = ?, sidebar_color = ?, background_color = ?, card_color = ?, card_position = ? WHERE id = 1";
+    db.query(q, [color, sidebar, background, card, card_position], (err) => {
+        if (err) return res.status(500);
+        res.json({color, card_position});
+    });
+};

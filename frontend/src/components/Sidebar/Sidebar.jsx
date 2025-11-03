@@ -2,19 +2,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
 
-function Sidebar({ inicioClick, cadastroClick, exibirClick }) {
+function Sidebar({ inicioClick, cadastroClick, exibirClick, configClick}) {
   const location = useLocation();
 
   const getButtonClass = (path) => {
     const base = "w-full text-left rounded-md px-3 py-2 transition-colors duration-200";
-    const active = "text-blue-600 dark:text-blue-400 font-semibold bg-blue-100 dark:bg-blue-900";
-    const inactive = "hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700";
-    return location.pathname === path ? `${base} ${active}` : `${base} ${inactive}`;
+    const inactive = "hover:text-[color:var(--text-color)] dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700";
+    return location.pathname === path ? `${base}` : `${base} ${inactive}`;
   };
 
   return (
-    <aside className="z-30 w-56 overflow-y-auto bg-white dark:bg-gray-800 shadow-lg hidden lg:flex flex-col h-screen">
-  <div className="py-6 text-gray-600 dark:text-gray-300 flex flex-col h-full">
+    <aside className="z-30 w-64 h-screen flex-col hidden lg:flex 
+  bg-[color:var(--sidebar-color)] dark:bg-gray-900 shadow-[4px_0_10px_rgba(0,0,0,0.3)]">
+    <div className="py-6 bg-[color:var(--sidebar-color)] font-medium  dark:text-gray-300 flex flex-col h-full" style={{ color: "var(--text-color)" }}>
     {/* Container da logo + botões */}
     <div>
       <div className="flex justify-center mb-10">
@@ -40,6 +40,11 @@ function Sidebar({ inicioClick, cadastroClick, exibirClick }) {
         <li>
           <button onClick={exibirClick} className={getButtonClass("/exibir")}>
             Exibir Tarefas
+          </button>
+        </li>
+        <li>
+          <button onClick={configClick} className={getButtonClass("/configuracoes")}>
+            Configurações
           </button>
         </li>
       </ul>
