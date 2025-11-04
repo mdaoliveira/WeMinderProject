@@ -68,14 +68,12 @@ export const postTask = (req, res) => {
                 VALUES ?`;
     
             const subtaskValues = subtasks.map((sub) => [
-                id: taskId,
-                title,
-                description,
-                priority,
-                due_date,
-                is_completed,
-                subtasks,
-                position,
+                taskId,
+                sub.title,
+                sub.description || null,
+                sub.priority,
+                sub.due_date,
+                sub.is_completed || false,
             ]);
     
             db.query(qSubtask, [subtaskValues], (err2) => {
