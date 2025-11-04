@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Card from "../card/card";
 
 const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
   const [data, setData] = useState([]);

@@ -1,6 +1,5 @@
 import express from "express";
 import { getTasks, postTask, deleteTask, updateColor, getColor} from "../Controllers/tasks.js";
-
 const router = express.Router();
 
 router.get("/tarefas", getTasks);

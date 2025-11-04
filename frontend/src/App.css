@@ -203,7 +203,7 @@ html, body, #root {
   justify-content: center;
 }
 
-.cadastro-tarefas button {
+.cadastro-tarefas button, .edicao-tarefas button {
   padding: 0.5rem 1rem;
   background-color: #79d4eb;
   border: none;
@@ -213,6 +213,40 @@ html, body, #root {
   cursor: pointer;
 }
 
+
 .cadastro-tarefas button:hover {
   background-color: #136a80;
+}
+
+.edicao-tarefas {
+  max-height: 100vh;
+  overflow-y: auto;
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  border: 2px solid black;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.edicao-tarefas .botoes{
+  gap: 0.1rem;
+}
+
+.edicao-tarefas button {
+  margin-right: 30%;
+}
+
+.edicao-tarefas input[type="text"] {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
 }

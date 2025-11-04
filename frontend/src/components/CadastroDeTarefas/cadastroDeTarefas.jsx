@@ -13,7 +13,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
 
   const validateForm = (data) => {
     const { title, description, due_date, subtasks, is_complex } = data;
-    if (!title || !description || !due_date) {
+    if (!title || !description || !due_date ) {
       alert("Todos os campos devem ser preenchidos!");
       return false;
     }
@@ -42,10 +42,10 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
     let data = {};
 
     if (tipoTarefa === "simples") {
-      const { title, description, due_date, priority } = simpleTask;
+      const { title, description, due_date, priority, position } = simpleTask;
 
       // Passa is_complex para validar corretamente
-      if (!validateForm({ title, description, due_date, priority, is_complex: false })) return;
+      if (!validateForm({ title, description, due_date, priority, is_complex: false, position })) return;
 
       data = {
         title,
@@ -54,12 +54,13 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
         priority: parseInt(priority),
         is_completed: false,
         is_complex: false,
+        position,
       };
     } else if (tipoTarefa === "complexa") {
-      const { title, description, due_date, priority, subtasks } = complexTask;
+      const { title, description, due_date, priority, subtasks, position } = complexTask;
 
       // Passa is_complex = true para validar subtarefas
-      if (!validateForm({ title, description, due_date, priority, subtasks, is_complex: true })) return;
+      if (!validateForm({ title, description, due_date, priority, subtasks,position, is_complex: true })) return;
 
       data = {
         title,
@@ -69,6 +70,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
         is_completed: false,
         is_complex: true,
         subtasks,
+        position,
       };
     } else {
       alert("Selecione o tipo de tarefa!");
