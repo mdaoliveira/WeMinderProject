@@ -68,12 +68,14 @@ export const postTask = (req, res) => {
                 VALUES ?`;
     
             const subtaskValues = subtasks.map((sub) => [
-                taskId,
-                sub.title,
-                sub.description || null,
-                sub.priority,
-                sub.due_date,
-                sub.is_completed || false,
+                id: taskId,
+                title,
+                description,
+                priority,
+                due_date,
+                is_completed,
+                subtasks,
+                position,
             ]);
     
             db.query(qSubtask, [subtaskValues], (err2) => {
@@ -84,20 +86,17 @@ export const postTask = (req, res) => {
     }
     else{
         const qTask = `INSERT INTO simpleTasks (title, description, priority, due_date, is_completed, position)
-            VALUES(?,?,?,?,?,?)`;     
+            VALUES(?,?,?,?,?,?)`;
+        const values = [
+            title,
+            description,
+            priority,
+            due_date,
+            is_completed || false,
+            position,
+        ];
         db.query(qTask, values, (err, result) => {
             if (err) return res.status(500).json(err);
-            const taskId = result.insertId;
-            const createdTask = {
-                id: taskId,
-                title,
-                description,
-                priority,
-                due_date,
-                is_completed,
-                subtasks,
-                position,
-            };
             if (!is_complex || !subtasks || subtasks.length === 0) {
                 return res.status(201).json(createdTask);
             }
@@ -155,5 +154,22 @@ export const editTask = (req, res) => {
     const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
     db.query(updateTaskQ, taskValues, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+    });
+};
+
+export const getColor = (req, res) => {
+    const q = "SELECT text_color, sidebar_color, background_color, card_color, card_position FROM personalizacao WHERE id = 1";
+    db.query(q, (err, results) => {
+        if (err) return res.status(500);
+        res.json({color: results[0].text_color, sidebar: results[0].sidebar_color, 
+            background: results[0].background_color, card: results[0].card_color, card_position: results[0].card_position});
+    });
+};
+export const updateColor = (req, res) => {
+    const { color, sidebar, background, card, card_position} = req.body;
+    const q = "UPDATE personalizacao SET text_color = ?, sidebar_color = ?, background_color = ?, card_color = ?, card_position = ? WHERE id = 1";
+    db.query(q, [color, sidebar, background, card, card_position], (err) => {
+        if (err) return res.status(500);
+        res.json({color, card_position});
     });
 };

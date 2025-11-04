@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/tarefas", getTasks);
 router.post("/tarefas", postTask);
 router.delete("/tarefas/:id", deleteTask);
-// router.put("/tarefas/:id", putTask);
+//router.put("/tarefas/:id", putTask);
 router.get("/color", getColor);
 router.put("/color", updateColor);
 

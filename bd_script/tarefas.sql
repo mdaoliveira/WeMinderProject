@@ -7,6 +7,7 @@ USE tarefas;
 DROP TABLE IF EXISTS subtasks;
 DROP TABLE IF EXISTS complexTasks;
 DROP TABLE IF EXISTS simpleTasks;
+DROP TABLE IF EXISTS personalizacao;
 
 -- Criar tabela de tarefas simples
 CREATE TABLE simpleTasks (
@@ -39,6 +40,18 @@ CREATE TABLE subtasks (
     is_completed BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (parent_task_id) REFERENCES complexTasks(id)
 );
+
+CREATE TABLE IF NOT EXISTS personalizacao (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    text_color VARCHAR(20),
+    sidebar_color VARCHAR(20),
+    background_color VARCHAR(20),
+    card_color VARCHAR(20),
+    card_position VARCHAR(20)
+);
+
+INSERT INTO personalizacao (text_color, sidebar_color, background_color, card_color, card_position)
+VALUES ('#1d4ed8', '#f3f4f6', '#f3f4f6', '#ffffff', 'lista');
 
 -- Inserir 15 tarefas (simples e complexas)
 INSERT INTO simpleTasks (title, description, priority, due_date, is_completed) VALUES
