@@ -1,10 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import SignupAndLogin from "../SignupAndLogin/SignupAndLogin";
+
 
 function Sidebar({ inicioClick, cadastroClick, exibirClick }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [reloadCount, setReloadCount] = useState(0);
+  
 
   const getButtonClass = (path) => {
     const base = "w-full text-left rounded-md px-3 py-2 transition-colors duration-200";

@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import "./index.css";
 import "./App.css";
 import Sidebar from "./components/Sidebar/Sidebar";
@@ -5,10 +6,11 @@ import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas"
 import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Tasks from "./components/Tasks/Tasks";
-import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
 import SignupAndLogin from "./components/SignupAndLogin/SignupAndLogin";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+
 function AppContent() {
     const [modalOpen, setModalIsOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
@@ -19,12 +21,14 @@ function AppContent() {
     const navigate = useNavigate();
 
     // verifica se o usuário está autenticado
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/SignupAndLogin', { replace: true });
+        } else {
+            setIsAuthenticated(true);
+        }
+    }, [navigate]);
 
 
     function clicked(item) {
@@ -83,9 +87,9 @@ function AppContent() {
     }
 
     // Se não estiver autenticado, vai para a página de login
-  if (!isAuthenticated) {
-    return <Navigate to="/SignupAndLogin" replace/>;
-  }
+    if (!isAuthenticated) {
+        return <SignupAndLogin onTaskClicked={clicked} reloadPage={reloadCount} />;
+    }   
 
 
     return (
@@ -95,7 +99,6 @@ function AppContent() {
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
             />
-
             <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
                 {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
@@ -210,19 +213,25 @@ function AppContent() {
 
                 <Routes>
                     <Route
-                        path="/"
-                        element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount} />}
-                    />
-                    <Route
-                        path="/exibir"
-                        element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />}
-                    />
-
-                    <Route
                         path="/SignupAndLogin"
                         element={<SignupAndLogin onTaskClicked={clicked} reloadPage={reloadCount} />}
-                        
                     />
+                    <Route
+                        path="/"
+                        element={
+                          <ProtectedRoute isAuth={isAuthenticated}>
+                            <Tasks onTaskClicked={clicked} reloadPage={reloadCount} />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/exibir"
+                        element={
+                          <ProtectedRoute isAuth={isAuthenticated}>
+                            <ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />
+                          </ProtectedRoute>
+                        }
+                      />
                 </Routes>
             </main>
         </div>

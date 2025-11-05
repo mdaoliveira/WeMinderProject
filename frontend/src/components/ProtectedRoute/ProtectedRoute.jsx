@@ -1,13 +1,5 @@
-import e from "express";
-import React from "react";
+// ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
-
-const ProtectedRoute = ({ children }) => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        return <Navigate to="/SignupAndLogin" replace />;
-    }
-    return children;
-};
-export default ProtectedRoute;
+export default function ProtectedRoute({ isAuth, children }) {
+  return isAuth ? children : <Navigate to="/SignupAndLogin" replace />;
+}
