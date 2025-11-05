@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MapaInterativo, { BuscaLocal, handleBuscar } from "../Mapa/Mapa";
 
 const today = new Date().toISOString().split("T")[0];

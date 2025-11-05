@@ -5,7 +5,7 @@ import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas"
 import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Tasks from "./components/Tasks/Tasks";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
 import SignupAndLogin from "./components/SignupAndLogin/SignupAndLogin";

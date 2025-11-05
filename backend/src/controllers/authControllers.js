@@ -6,14 +6,6 @@ import crypto from "crypto";
 import { createResetToken, findValidToken, markTokenAsUsed, deleteUserTokens } from "../../models/PasswordReset.js";
 import { sendPasswordResetEmail } from "../../services/emailService.js";
 
-// Usa a chave secreta do .env
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-  console.error("ERRO: JWT_SECRET não está definido no arquivo .env");
-  process.exit(1);
-}
-
 // Função para registrar usuário
 export const signup = async (req, res) => {
   try {
@@ -87,7 +79,7 @@ export const login = async (req, res) => {
         email: user.email,
         username: user.username 
       },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: "7d" } // Token válido por 7 dias
     );
 

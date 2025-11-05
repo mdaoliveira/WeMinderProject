@@ -1,15 +1,22 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Sidebar({ inicioClick, cadastroClick, exibirClick }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getButtonClass = (path) => {
     const base = "w-full text-left rounded-md px-3 py-2 transition-colors duration-200";
     const active = "text-blue-600 dark:text-blue-400 font-semibold bg-blue-100 dark:bg-blue-900";
     const inactive = "hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700";
     return location.pathname === path ? `${base} ${active}` : `${base} ${inactive}`;
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    navigate("/SignupAndLogin");
   };
 
   return (
@@ -48,6 +55,7 @@ function Sidebar({ inicioClick, cadastroClick, exibirClick }) {
     {/* Botão Sair na base */}
     <div className="px-6 mt-auto mb-6 flex justify-center">
       <button
+        onClick={handleLogout}
         className="flex items-center space-x-3 hover:text-red-600 transition-colors duration-200 cursor-pointer"
       >
         <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-2xl" />

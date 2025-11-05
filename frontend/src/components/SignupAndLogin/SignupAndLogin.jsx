@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+
 import "../../App.css";
 const SignupAndLogin = () => {
   const [formMode, setFormMode] = useState("Sign Up");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -91,7 +94,15 @@ const SignupAndLogin = () => {
     }
 
     setSuccess(formMode === "Sign Up" ? "Cadastro realizado com sucesso!" : "Login realizado com sucesso!");
-    setTimeout(() => (window.location.href = "/dashboard"), 1500);
+    //setTimeout(() => (window.location.href = "/dashboard"), 1500);
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user || {}));
+}
+
+    setSuccess("Login realizado com sucesso!");
+    setTimeout(() => navigate("/dashboard"), 1000);
+
   } catch (err) {
     console.error("Erro em handleSubmit:", err);
     setError(err.message || "Erro desconhecido ao conectar com o servidor");
