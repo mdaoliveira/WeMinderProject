@@ -47,9 +47,13 @@ function AppContent() {
         navigate("/");
     }
 
-    function ExcluirTarefas(id) {
+    function ExcluirTarefas(id, subtarefas) {
+        const payload = {
+            subtarefas:subtarefas
+        }
         fetch(`http://localhost:8800/tarefas/${id}`, {
             method: "DELETE",
+            body: JSON.stringify(payload)
         })
             .then(() => {
                 closeModal();
