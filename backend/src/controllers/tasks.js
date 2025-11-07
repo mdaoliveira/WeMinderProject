@@ -1,4 +1,4 @@
-import { db } from "../db.js";
+import { db } from "../database/db.js";
 
 export const getTasks = (req, res) => {
     const qTasks = "SELECT * FROM tasks";
