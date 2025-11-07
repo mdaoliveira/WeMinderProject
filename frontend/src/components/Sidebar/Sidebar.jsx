@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
 
-function Sidebar({ inicioClick, cadastroClick, exibirClick, configClick}) {
+function Sidebar({ inicioClick, cadastroClick, exibirClick, configClick, lixeiraClick}) {
   const location = useLocation();
 
   const getButtonClass = (path) => {
@@ -12,7 +12,7 @@ function Sidebar({ inicioClick, cadastroClick, exibirClick, configClick}) {
   };
 
   return (
-    <aside className="z-30 w-64 h-screen flex-col hidden lg:flex 
+    <aside className="z-30 w-64 h-screen flex-col lg:flex 
   bg-[color:var(--sidebar-color)] dark:bg-gray-900 shadow-[4px_0_10px_rgba(0,0,0,0.3)]">
     <div className="py-6 bg-[color:var(--sidebar-color)] font-medium  dark:text-gray-300 flex flex-col h-full" style={{ color: "var(--text-color)" }}>
     {/* Container da logo + botões */}
@@ -45,6 +45,11 @@ function Sidebar({ inicioClick, cadastroClick, exibirClick, configClick}) {
         <li>
           <button onClick={configClick} className={getButtonClass("/configuracoes")}>
             Configurações
+          </button>
+        </li>
+        <li>
+          <button onClick={lixeiraClick} className={getButtonClass("/lixeira")}>
+            Lixeira
           </button>
         </li>
       </ul>

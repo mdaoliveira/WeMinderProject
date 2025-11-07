@@ -53,22 +53,198 @@ export const postTask = (req, res) => {
     });
 };
 
+export const getLixeira = (req, res) => {
+    const q = "SELECT * FROM lixeira"; 
+    db.query(q, (err, tarefas) => {
+        if (err) {return res.status(500).json({error: "Erro get lixeira"});}
+        
+        if (tarefas.length===0){return res.status(200).json([])};
 
-export const deleteTask = (req, res) => {
-  const taskId = req.params.id;
-  const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
+        const qsubtarefas = `SELECT * FROM subtasks_lixeira;`;
+        db.query(qsubtarefas, (err2, subtarefas) => {
+            if (err2) {return res.status(500).json({error: "Erro get subtarefas"});}
 
-  db.query(deleteSubtasksQ, [taskId], (err) => {
-    if (err) return res.sendStatus(500);
-    const deleteTaskQ = "DELETE FROM tasks WHERE id = ?";
+            const tarefaseSubtarefas = tarefas.map((tarefa)=>{
+                const subs = subtarefas.filter(sub => sub.parent_task_id===tarefa.id);
+                return {...tarefa,subtasks:subs};
+            });
+            res.status(200).json(tarefaseSubtarefas)
+        });
+});
+};
 
-    db.query(deleteTaskQ, [taskId], (err2) => {
-      if (err2) return res.sendStatus(500);
-      return res.status(200).json({ message: "Tarefa excluída com sucesso" });
+
+export const enviaLixeira = (req, res) => {
+    const taskId = req.params.id;
+    const enviaTarefa = `INSERT INTO lixeira (title, description, priority, due_date, is_completed, is_complex
+    )SELECT title, description, priority, due_date, is_completed, is_complex FROM tasks WHERE id=?;`;
+
+    db.query(enviaTarefa, [taskId], (err, result) => {
+        if (err) {return res.status(500).json({error:"Erro ao enviar tarefa para a lixeira"});
+        }
+
+        const lixeiraTarefa = result.insertId;
+        const enviaSubtarefas = `
+        INSERT INTO subtasks_lixeira (parent_task_id, title, description, priority, due_date, is_completed)
+        SELECT ?, title, description, priority, due_date, is_completed
+        FROM subtasks
+        WHERE parent_task_id = ?;
+        `;
+        db.query(enviaSubtarefas, [lixeiraTarefa, taskId], (err2) => {
+        if (err2) {return res.status(500).json({ error: "Erro ao enviar subtarefas para a lixeira" });
+        }
+        
+            const deleteTaskQ = "DELETE FROM tasks WHERE id = ?";
+            const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
+
+            db.query(deleteSubtasksQ, [taskId], (err3) => {
+            if (err3) {return res.status(500).json({error:"Erro ao excluir subtarefa"});}
+            
+                db.query(deleteTaskQ, [taskId], (err4) => {
+                if (err4) {return res.status(500).json({error:"Erro ao excluir"});}
+                return res.status(200).json({ message: "Tarefa enviada para a lixeira com sucesso" });
+                });
+            });
+        });
+    });
+};
+
+export const restaurarTarefa = (req, res) => {
+  const id = req.params.id;
+
+  const selecionarTarefa = "SELECT * FROM lixeira WHERE id = ?";
+  db.query(selecionarTarefa, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Erro ao buscar tarefa da lixeira" });
+    if (!results.length) return res.status(404).json({ message: "Tarefa não encontrada na lixeira" });
+
+    const tarefa = results[0];
+
+    const inserirTarefa = `
+      INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex)
+      VALUES (?, ?, ?, ?, ?, ?)`;
+    const values = [tarefa.title,tarefa.description,tarefa.priority,tarefa.due_date,tarefa.is_completed,tarefa.is_complex];
+
+    db.query(inserirTarefa, values, (err2, result) => {
+      if (err2) return res.status(500).json({ error: "Erro ao restaurar tarefa"});
+
+      const idnovo = result.insertId;
+      const idantigo = tarefa.id;
+
+      const restaurarSubtarefas = `
+        INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
+        SELECT ?, title, description, priority, due_date, is_completed FROM subtasks_lixeira
+        WHERE parent_task_id = ?`;
+
+      db.query(restaurarSubtarefas, [idnovo, idantigo], (err3) => {
+        if (err3) return res.status(500).json({ error: "Erro ao restaurar subtarefas"});
+
+        // apagar lixeira
+        const deletarSubtarefas = "DELETE FROM subtasks_lixeira WHERE parent_task_id = ?";
+        const deletarTarefa = "DELETE FROM lixeira WHERE id = ?";
+
+        db.query(deletarSubtarefas, [idantigo], (err4) => {
+          if (err4) return res.status(500).json({ error: "Erro ao apagar subtarefas da lixeira" });
+
+          db.query(deletarTarefa, [idantigo], (err5) => {
+            if (err5) return res.status(500).json({ error: "Erro ao apagar tarefa da lixeira" });
+
+            return res.status(200).json({ message: "Tarefa e subtarefas restauradas com sucesso" });
+          });
+        });
+      });
+    });
+  });
+};
+export const restaurarTudo = (req, res) => {
+  const selecionarId = "SELECT * FROM lixeira";
+  
+  db.query(selecionarId, (err, tarefasLixeira) => {
+    if (err) return res.status(500).json({ error: "Erro ao buscar tarefas da lixeira" });
+    if (!tarefasLixeira.length) return res.status(200).json({ message: "Nenhuma tarefa na lixeira" });
+
+    let cont = 0;
+    tarefasLixeira.forEach(tarefa => {
+      const tarefaId = `
+        INSERT INTO tasks (title, description, priority, due_date, is_completed, is_complex)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+      const values = [tarefa.title,tarefa.description,tarefa.priority,tarefa.due_date,tarefa.is_completed,tarefa.is_complex];
+
+      db.query(tarefaId, values, (err2, result) => {
+        if (err2) return res.status(500).json({ error: "Erro ao restaurar tarefa"});
+        
+        const idnovo = result.insertId;
+        const idantigo = tarefa.id;
+
+        const restaurarSubtarefas = `
+          INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
+          SELECT ?, title, description, priority, due_date, is_completed
+          FROM subtasks_lixeira WHERE parent_task_id = ?
+        `;
+        db.query(restaurarSubtarefas, [idnovo, idantigo], (err3) => {
+          if (err3) return res.status(500).json({ error: "Erro ao restaurar subtarefas"});
+
+          // apaga da lixeira
+          const deletarSubtarefa = "DELETE FROM subtasks_lixeira WHERE parent_task_id = ?";
+          const deletarTarefa = "DELETE FROM lixeira WHERE id = ?";
+          db.query(deletarSubtarefa, [idantigo]);
+          db.query(deletarTarefa, [idantigo], () => {
+            cont++;
+            if (cont === tarefasLixeira.length) {
+              return res.status(200).json({ message: "Todas as tarefas e subtarefas foram restauradas com sucesso" });
+            }
+          });
+        });
+      });
     });
   });
 };
 
+
+
+
+export const excluirPermanente = (req, res) => {
+    const id = Number(req.params.id); 
+    if (!id) return res.status(400).json({ error: "ID inválido" });
+
+    const excluirSubtarefas = "DELETE FROM subtasks_lixeira WHERE parent_task_id = ?";
+    const excluirTarefa = "DELETE FROM lixeira WHERE id = ?";
+
+    db.query(excluirSubtarefas, [id], (err) => {
+        if (err) return res.status(500).json({ error: "Erro ao excluir subtarefas", details: err });
+
+        db.query(excluirTarefa, [id], (err2) => {
+            if (err2) return res.status(500).json({ error: "Erro ao excluir tarefa", details: err2 });
+            return res.status(200).json({ message: "Tarefa e subtarefas excluídas permanentemente" });
+        });
+    });
+};
+
+export const excluirTudoPermanente = (req, res) => {
+    const selecionarid = "SELECT id FROM lixeira";
+
+    db.query(selecionarid, (err, results) => {
+        if (err) return res.status(500).json({ error: "Erro ao buscar IDs da lixeira", details: err });
+
+        if (!results || results.length === 0) {
+            return res.status(200).json({ message: "Nenhuma tarefa na lixeira" });
+        }
+
+        const ids = results.map(r => r.id);
+
+        const excluirSubtarefas = "DELETE FROM subtasks_lixeira WHERE parent_task_id IN (?)";
+        db.query(excluirSubtarefas, [ids], (err2) => {
+            if (err2) return res.status(500).json({ error: "Erro ao excluir subtarefas", details: err2 });
+
+            const excluirTarefas = "DELETE FROM lixeira WHERE id IN (?)";
+            db.query(excluirTarefas, [ids], (err3) => {
+                if (err3) return res.status(500).json({ error: "Erro ao excluir tarefas", details: err3 });
+
+                return res.status(200).json({ message: "Todas as tarefas e subtarefas excluídas permanentemente" });
+            });
+        });
+    });
+};
 
 export const getColor = (req, res) => {
     const q = "SELECT text_color, sidebar_color, background_color, card_color, card_position FROM personalizacao WHERE id = 1";

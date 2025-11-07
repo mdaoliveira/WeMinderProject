@@ -40,6 +40,29 @@ CREATE TABLE IF NOT EXISTS personalizacao (
     card_position VARCHAR(20)
 );
 
+
+-- tabela lixeira
+CREATE TABLE IF NOT EXISTS lixeira (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    priority INTEGER CHECK(priority BETWEEN 0 AND 3),
+    due_date DATE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    is_complex BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE subtasks_lixeira (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    parent_task_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    priority INTEGER CHECK(priority BETWEEN 0 AND 3),
+    due_date DATE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (parent_task_id) REFERENCES lixeira(id)
+);
+
 INSERT INTO personalizacao (text_color, sidebar_color, background_color, card_color, card_position)
 VALUES ('#1d4ed8', '#f3f4f6', '#f3f4f6', '#ffffff', 'lista');
 

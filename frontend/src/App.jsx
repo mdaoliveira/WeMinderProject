@@ -5,6 +5,7 @@ import CadastroDeTarefas from './components/CadastroDeTarefas/cadastroDeTarefas'
 import ExibirTarefas from './components/ExibirTarefas/ExibirTarefas';
 import Tasks from './components/Tasks/Tasks';
 import Configuracoes from './components/Configuracoes/Configuracoes';
+import Lixeira from './components/Lixeira/Lixeira'
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ function AppContent() {
   const [itemClicked, setItemClicked] = useState(null);
   const [reloadCount, setReloadCount] = useState(0);
   const [color, setColor] = useState(null);
+  const [selectDelete, setSelectDelete] = useState(null);
 
   const navigate = useNavigate();
 
@@ -22,10 +24,16 @@ function AppContent() {
     setModalType('detalhes');
     setItemClicked(item);
   }
+  function clickedDelete(item) {
+    setModalIsOpen(true);
+    setModalType('detalhesLixeira');
+    setSelectDelete(item);
+  }
 
   function closeModal() {
     setModalIsOpen(false);
     setItemClicked(null);
+    setSelectDelete(null);
     setModalType(null);
   }
 
@@ -39,6 +47,10 @@ function AppContent() {
     setModalIsOpen(true);
   }
 
+  function lixeiraClicked() {
+    navigate('/lixeira');
+  }
+
   function exibirClicked() {
     navigate('/exibir');
   }
@@ -48,8 +60,8 @@ function AppContent() {
   }
 
   function ExcluirTarefas(id) {
-    fetch(`http://localhost:8800/tarefas/${id}`, {
-      method: "DELETE",
+    fetch(`http://localhost:8800/lixeira/${id}`, {
+      method: "PUT",
     })
       .then(() => {
         closeModal();
@@ -86,7 +98,7 @@ function AppContent() {
   return (
     <div className="App flex">
       <Sidebar inicioClick={inicioClicked} cadastroClick={cadastroClicked} exibirClick={exibirClicked} configClick={configClicked}
-        defaultColor={color} />
+       lixeiraClick={lixeiraClicked}/>
       <main className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900">
         {/* MODAL DE CADASTRO */}
         {modalOpen && modalType === 'cadastro' && (
@@ -154,9 +166,53 @@ function AppContent() {
             </div>
           </div>
         )}
+        {/* Modal de Detalhes Lixeira*/}
+        {modalOpen && modalType === 'detalhesLixeira' && selectDelete && (
+          <div className="modal-show">
+            <div className="modal-content text-[color:var(--text-color)]">
+              <h1><b>Detalhes da Tarefa</b></h1>
+              <p><strong>Título: </strong>{selectDelete.title}</p>
+              <p><strong>Descrição: </strong>{selectDelete.description}</p>
+              <p><strong>Prioridade: </strong>{priorityLabels[selectDelete.priority]}</p>
+              <p><strong>Data: </strong>{new Date(selectDelete.due_date).toLocaleDateString("pt-BR")}</p>
+
+              {selectDelete.subtasks && selectDelete.subtasks.length > 0 && (
+                <div className="mt-6 bg-[color:var(--card-color)]">
+                  <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">Subtarefa</h2>
+                  {selectDelete.subtasks.map((sub, index) => (
+                    <div key={index} className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-[color:var(--card-color)] dark:bg-gray-900">
+                      <hr className="border-gray-300 dark:border-gray-700 mb-3" />
+                      <p className="dark:text-gray-200 mb-1">
+                        <strong>Título: </strong>{sub.title}
+                      </p>
+                      <p className="dark:text-gray-300 mb-1">
+                        <strong>Descrição: </strong>{sub.description}
+                      </p>
+                      <p className="dark:text-gray-300">
+                        <strong>Data: </strong>{new Date(sub.due_date).toLocaleDateString("pt-BR", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric"
+                        })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-center items-center pt-4">
+                <button type="button" onClick={closeModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+                >Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <Routes>
           <Route path="/" element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount} />} />
           <Route path="/exibir" element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />} />
+          <Route path="/lixeira" element={<Lixeira onTaskClicked={clickedDelete} reloadPage={reloadCount} />} />
         </Routes>
 
       </main>
