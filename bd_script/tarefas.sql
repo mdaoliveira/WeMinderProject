@@ -20,7 +20,8 @@ CREATE TABLE tasks (
     due_date DATE,
     is_completed BOOLEAN DEFAULT FALSE,
     position VARCHAR(45) DEFAULT NULL,
-    type ENUM('simple', 'complex') NOT NULL  -- define o subtipo
+    type ENUM('simple', 'complex') NOT NULL,  -- define o subtipo
+    is_daily BOOLEAN DEFAULT FALSE
 );
 
 -- =========================================================
