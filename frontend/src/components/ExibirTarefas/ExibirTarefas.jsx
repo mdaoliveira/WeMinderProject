@@ -56,7 +56,6 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
         month: "long",
         year: "numeric",
       });
-
       if (!ultimaData || ultimaData !== dataFormatada) {
         agrupado.push({ data: dataFormatada, tarefas: [tarefa] });
         ultimaData = dataFormatada;
@@ -91,29 +90,7 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
             </h1>
             <div className="flex flex-col gap-4">
               {conjtarefa.tarefas.map((tarefa) => (
-                <div key={tarefa.id} className="bg-[color:var(--card-color)] text-[color:var(--text-color)] 
-                dark:bg-gray-800 shadow-[0_0_4px_1px_rgba(0,0,0,0.7)] rounded-lg p-4 w-80 min-h-[11rem] 
-                flex flex-col justify-between cursor-pointer" onClick={() => onTaskClicked(tarefa)}>
-                  <div className="flex flex-col">
-                    <h2 className="dark:text-gray-100 font-semibold text-lg mb-2 truncate">
-                      Título: {tarefa.title}
-                    </h2>
-                    <p className="dark:text-gray-300 line-clamp-2">
-                      Descrição: {tarefa.description}
-                    </p>
-                  </div>
-                  <div className="flex justify-end mt-3">
-                    <img
-                      src="/images/olho.png"
-                      alt="Mais informações"
-                      className="h-8 w-8 cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTaskClicked(tarefa);
-                      }}
-                    />
-                  </div>
-                </div>
+                Card(tarefa,onTaskClicked)
               ))}
             </div>
           </div>
@@ -131,27 +108,7 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
             {conjtarefa.data}
           </h1>
           {conjtarefa.tarefas.map((tarefa) => (
-            <div key={tarefa.id} className="bg-[color:var(--card-color)] text-[color:var(--text-color)] dark:bg-gray-800 
-              shadow-[0_0_4px_1px_rgba(0,0,0,0.7)] rounded-lg p-4 mb-6 w-full max-w-xl flex justify-between items-center cursor-pointer"
-              onClick={() => onTaskClicked(tarefa)}>
-              <div className="flex flex-col max-w-[85%]">
-                <h2 className="dark:text-gray-100 font-semibold text-lg mb-2 truncate">
-                  Título: {tarefa.title}
-                </h2>
-                <p className="dark:text-gray-300 truncate">
-                  Descrição: {tarefa.description}
-                </p>
-              </div>
-              <img
-                src="/images/olho.png"
-                alt="Mais informações"
-                className="h-8 w-8 cursor-pointer ml-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onTaskClicked(tarefa);
-                }}
-              />
-            </div>
+            Card(tarefa, onTaskClicked)
           ))}
         </React.Fragment>
       ))}
