@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import MapaInterativo, { BuscaLocal, handleBuscar } from "../Mapa/Mapa";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -7,6 +8,7 @@ function TarefasSimples({ onChange }) {
   const [description, setDescription] = useState("");
   const [due_date, setDueDate] = useState("");
   const [priority, setPriority] = useState("");
+  const [position, setPosition] = useState("");
   const [is_daily, setIsDaily] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -17,19 +19,20 @@ function TarefasSimples({ onChange }) {
       description,
       due_date: due_date === "" ? null : due_date,
       priority: priority === "" ? "" : parseInt(priority),
+      position,
       is_daily,
     });
-  }, [title, description, due_date, priority, is_daily, onChange]);
+  }, [title, description, due_date, priority,position, is_daily, onChange]);
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Criar Tarefa Simples</h2>
+      <h2 className="text-xl font-semibold text-[color:var(--text-color)] dark:text-gray-100">Criar Tarefa Simples</h2>
 
       <div className="space-y-2">
         <label className="block font-medium">Título</label>
         <input
           type="text"
-          className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+          className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -39,7 +42,7 @@ function TarefasSimples({ onChange }) {
         <label className="block font-medium">Descrição</label>
         <input
           type="text"
-          className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+          className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -50,7 +53,7 @@ function TarefasSimples({ onChange }) {
         <input
           type="date"
           min={today}
-          className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+          className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={due_date}
           disabled={isChecked}
           onChange={(e) => { setDueDate(e.target.value); setInputValue(e.target.value); }}
@@ -81,6 +84,18 @@ function TarefasSimples({ onChange }) {
             <span>{label}</span>
           </label>
         ))}
+      </div>
+      <div className="space-y-2">
+      <MapaInterativo
+         // já como [lat, lng] ou null
+        mostrarBotao={true}
+        onPositionChange={(coords) => {
+          // ✅ protege contra null
+          const posicao = coords && coords.length === 2 ? coords.join(",") : null;
+          
+        }}
+      />
+
       </div>
 
       <div className="space-y-2">
