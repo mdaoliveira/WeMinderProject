@@ -97,9 +97,9 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
         <form
           onSubmit={addTask}
-          className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 overflow-auto max-h-[90vh]"
+          className="bg-[color:var(--card-color)] rounded-lg shadow-lg max-w-lg w-full p-6 overflow-auto max-h-[90vh]"
         >
-          <div className="flex flex-col space-y-4">
+          <div className="text-[color:var(--text-color)] flex flex-col space-y-4">
             <div>
               <label className="inline-flex items-center mr-4">
                 <input
@@ -138,7 +138,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
               </button>
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
               >
                 Cadastrar
               </button>

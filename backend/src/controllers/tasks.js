@@ -1,159 +1,147 @@
 import { db } from "../database/db.js";
 
 export const getTasks = (req, res) => {
-    const qSimpleTasks = "SELECT * FROM simpleTasks";
-    const qComplexTasks = "SELECT * FROM complexTasks";
+    const qTasks = "SELECT * FROM tasks";
     const qSubtasks = "SELECT * FROM subTasks";
 
-    db.query(qSimpleTasks, (errSimple, simpleTasks) => {
-        if (errSimple) return res.status(500).json("Erro de servidor!");
+    db.query(qTasks, (errTask, tasks) => {
+        if (errTask) return res.status(500).json("Erro de servidor!");
 
-        db.query(qComplexTasks, (errComplex, complexTasks) => {
-            if (errComplex) return res.status(500).json("Erro de servidor!");
+        db.query(qSubtasks, (errSub, subtasks) => {
+            if (errSub) return res.status(500).json("Erro de servidor!");
 
-            db.query(qSubtasks, (errSub, subtasks) => {
-                if (errSub) return res.status(500).json("Erro de servidor!");
-
-                const complexWithSubtasks = complexTasks.map((task) => {
-                    const relatedSubtasks = subtasks.filter(
-                        (sub) => sub.parent_task_id === task.id
-                    );
-                    return { ...task, subtasks: relatedSubtasks };
-                });
-
-                const allTasks = [
-                    ...simpleTasks.map((t) => ({ ...t, type: "simple" })),
-                    ...complexWithSubtasks.map((t) => ({ ...t, type: "complex" })),
-                ];
-
-                return res.status(200).json(allTasks);
+            const taskWithSubtasks = tasks.map((task) => {
+                const relatedSubtasks = subtasks.filter(
+                    (sub) => sub.parent_task_id === task.id
+                );
+                return { ...task, subtasks: relatedSubtasks };
             });
+            return res.status(200).json(tasks);
         });
     });
 };
 
 export const postTask = (req, res) => {
-    const { title, description, priority, due_date, is_completed, is_complex, subtasks, position } =
-        req.body;
-    if(is_complex){
-        const qTask = `INSERT INTO complexTasks (title, description, priority, due_date, is_completed, position)
-        VALUES(?,?,?,?,?,?)`;  
-        const values = [
-            title,
-            description,
-            priority,
-            due_date,
-            is_completed || false,
-            position,
-        ];
+  const {
+    title,
+    description,
+    priority,
+    due_date,
+    is_completed,
+    is_complex,
+    subtasks,
+    position
+  } = req.body;
 
-        db.query(qTask, values, (err, result) => {
-            if (err) return res.status(500).json(err);
-            const taskId = result.insertId;
-            const createdTask = {
-                id: taskId,
-                title,
-                description,
-                priority,
-                due_date,
-                is_completed,
-                subtasks,
-                position,
-            };
-            if (!is_complex || !subtasks || subtasks.length === 0) {
-                return res.status(201).json(createdTask);
-            }
-            // subtarefas
-            const qSubtask = `INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
-                VALUES ?`;
-    
-            const subtaskValues = subtasks.map((sub) => [
-                taskId,
-                sub.title,
-                sub.description || null,
-                sub.priority,
-                sub.due_date,
-                sub.is_completed || false,
-            ]);
-    
-            db.query(qSubtask, [subtaskValues], (err2) => {
-                if (err2) return res.status(500).json(err2);
-                return res.status(201).json(createdTask);
-            });      
+  // Define tipo e query da tabela filha
+  let type = "simple";
+  let qTypeTask = "INSERT INTO simpleTasks (id) VALUES (?)";
+  if (is_complex) {
+    type = "complex";
+    qTypeTask = "INSERT INTO complexTasks (id) VALUES (?)";
+  }
+
+  // Inserir na tabela base
+  const qTask = `
+    INSERT INTO tasks (title, description, priority, due_date, is_completed, position, type)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    title,
+    description,
+    priority,
+    due_date,
+    is_completed || false,
+    position,
+    type
+  ];
+
+  db.query(qTask, values, (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    const taskId = result.insertId;
+    const createdTask = {
+      id: taskId,
+      title,
+      description,
+      priority,
+      due_date,
+      is_completed,
+      position,
+      type,
+      subtasks: subtasks || []
+    };
+
+    // Inserir na tabela filha (simpleTasks ou complexTasks)
+    db.query(qTypeTask, [taskId], (errType) => {
+      if (errType) return res.status(500).json(errType);
+
+      // Se for complexa e tiver subtarefas, insere as subtarefas
+      if (is_complex && subtasks && subtasks.length > 0) {
+        const qSubtask = `
+          INSERT INTO subtasks (parent_task_id, title, description, priority, due_date, is_completed)
+          VALUES ?
+        `;
+        const subtaskValues = subtasks.map((sub) => [
+          taskId,
+          sub.title,
+          sub.description || null,
+          sub.priority,
+          sub.due_date,
+          sub.is_completed || false
+        ]);
+
+        db.query(qSubtask, [subtaskValues], (err2) => {
+          if (err2) return res.status(500).json(err2);
+          return res.status(201).json(createdTask);
         });
-    }
-    else{
-        const qTask = `INSERT INTO simpleTasks (title, description, priority, due_date, is_completed, position)
-            VALUES(?,?,?,?,?,?)`;     
-        db.query(qTask, values, (err, result) => {
-            if (err) return res.status(500).json(err);
-            const taskId = result.insertId;
-            const createdTask = {
-                id: taskId,
-                title,
-                description,
-                priority,
-                due_date,
-                is_completed,
-                subtasks,
-                position,
-            };
-            if (!is_complex || !subtasks || subtasks.length === 0) {
-                return res.status(201).json(createdTask);
-            }
-        }); 
-    }
-    
+      } else {
+        // Se for simples ou complexa sem subtarefas
+        return res.status(201).json(createdTask);
+      }
+    });
+  });
 };
 
+
 export const deleteTask = (req, res) => {
-    const taskId = req.params.id;
-    const taskSub = req.params.subtasks;
-    console.log(taskSub);
-    if(taskSub){
-        const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
-        db.query(deleteSubtasksQ, [taskId], (err) => {
-        if (err) return res.sendStatus(500);
-        const deleteTaskQ = "DELETE FROM complexTasks WHERE id = ?";
+  const taskId = req.params.id;
+  const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
+  db.query(deleteSubtasksQ, [taskId], (err) => {
+    if (err) return res.sendStatus(500);
+    const deleteTaskQ = "DELETE FROM tasks WHERE id = ?";
 
-        db.query(deleteTaskQ, [taskId], (err2) => {
-            if (err2) return res.sendStatus(500);
-            return res.status(200).json({ message: "Tarefa excluída com sucesso" });
-        });
-    });
-    }
-    else{
-        const deleteTaskQ = "DELETE FROM simpleTasks WHERE id = ?";
-    
-        db.query(deleteTaskQ, [taskId], (err2) => {
+    db.query(deleteTaskQ, [taskId], (err2) => {
         if (err2) return res.sendStatus(500);
-            return res.status(200).json({ message: "Tarefa excluída com sucesso" });
-        });
-    }
-
+        return res.status(200).json({ message: "Tarefa excluída com sucesso" });
+    });
+  });
 };
 
 export const editTask = (req, res) => {
     const taskId = req.params.id;
     const { title, description, priority, due_date, is_completed, subtarefas } = req.body;
 
-    if (subtarefas.length > 0) {
-        const updateTaskQ = `
-            UPDATE complexTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
-            WHERE id=?
-        `;
-        const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
-        db.query(updateTaskQ, taskValues, (err) => {
-            if (err)
-                return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
-        });
-    }
-    const updateTaskQ = `
-        UPDATE simpleTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
-        WHERE id=?
-    `;
+    const updateTaskQ = `UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=? WHERE id=?`;
     const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
     db.query(updateTaskQ, taskValues, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+    });
+};
+
+export const getColor = (req, res) => {
+    const q = "SELECT text_color, sidebar_color, background_color, card_color, card_position FROM personalizacao WHERE id = 1";
+    db.query(q, (err, results) => {
+        if (err) return res.status(500);
+        res.json({color: results[0].text_color, sidebar: results[0].sidebar_color, 
+            background: results[0].background_color, card: results[0].card_color, card_position: results[0].card_position});
+    });
+};
+export const updateColor = (req, res) => {
+    const { color, sidebar, background, card, card_position} = req.body;
+    const q = "UPDATE personalizacao SET text_color = ?, sidebar_color = ?, background_color = ?, card_color = ?, card_position = ? WHERE id = 1";
+    db.query(q, [color, sidebar, background, card, card_position], (err) => {
+        if (err) return res.status(500);
+        res.json({color, card_position});
     });
 };
