@@ -18,6 +18,32 @@ export const getTasks = (req, res) => {
         });  
     });
 }
+export const editSubtask = (req, res) => {
+  const subtaskId = req.params.id;
+  const { due_date } = req.body;
+
+  if (!due_date) {
+    return res.status(400).json({ message: "Data é obrigatória" });
+  }
+
+  const updateSubtaskQ = `
+        UPDATE subtasks SET due_date=?
+        WHERE id=?
+    `;
+  const subtaskValues = [due_date, subtaskId];
+
+  db.query(updateSubtaskQ, subtaskValues, (err) => {
+    if (err) {
+      console.error("Erro ao atualizar subtarefa:", err);
+      return res
+        .status(500)
+        .json({ message: "Erro ao atualizar subtarefa", error: err.message });
+    }
+    return res
+      .status(200)
+      .json({ message: "Subtarefa atualizada com sucesso" });
+  });
+}
 
 export const postTask = (req, res) => {
   const {
@@ -131,10 +157,10 @@ export const editTask = (req, res) => {
     } = req.body;
 
     const updateTaskQ = `
-        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, type=?
+        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
         WHERE id=?
     `;
-    const taskValues = [title, description, priority, due_date, is_completed || false, type, taskId];
+    const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
 
     db.query(updateTaskQ, taskValues, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
