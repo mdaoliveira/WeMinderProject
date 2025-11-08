@@ -18,6 +18,32 @@ export const getTasks = (req, res) => {
         });  
     });
 }
+export const editSubtask = (req, res) => {
+  const subtaskId = req.params.id;
+  const { due_date } = req.body;
+
+  if (!due_date) {
+    return res.status(400).json({ message: "Data é obrigatória" });
+  }
+
+  const updateSubtaskQ = `
+        UPDATE subtasks SET due_date=?
+        WHERE id=?
+    `;
+  const subtaskValues = [due_date, subtaskId];
+
+  db.query(updateSubtaskQ, subtaskValues, (err) => {
+    if (err) {
+      console.error("Erro ao atualizar subtarefa:", err);
+      return res
+        .status(500)
+        .json({ message: "Erro ao atualizar subtarefa", error: err.message });
+    }
+    return res
+      .status(200)
+      .json({ message: "Subtarefa atualizada com sucesso" });
+  });
+}
 
 export const postTask = (req, res) => {
   const {
