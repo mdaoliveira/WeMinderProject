@@ -2,24 +2,22 @@ import { db } from "../database/db.js";
 
 export const getTasks = (req, res) => {
     const qTasks = "SELECT * FROM tasks";
-    const qSubtasks = "SELECT * FROM subTasks";
+    const qSubtasks = "SELECT * FROM subtasks";
 
-    db.query(qTasks, (errTask, tasks) => {
-        if (errTask) return res.status(500).json("Erro de servidor!");
-
-        db.query(qSubtasks, (errSub, subtasks) => {
-            if (errSub) return res.status(500).json("Erro de servidor!");
-
-            const taskWithSubtasks = tasks.map((task) => {
-                const relatedSubtasks = subtasks.filter(
+    db.query(qTasks, (err, tasks) => {
+        if (err) return res.status(500).json("Erro de servidor!");
+        db.query(qSubtasks, (err2, subtasks) => {
+            if (err2) return res.status(500).json("Erro de servidor!");
+            const data = tasks.map((task) => {
+                const existSubtasks = subtasks.filter(
                     (sub) => sub.parent_task_id === task.id
                 );
-                return { ...task, subtasks: relatedSubtasks };
+                return { ...task, subtasks: existSubtasks };
             });
-            return res.status(200).json(tasks);
-        });
+            return res.status(200).json(data);
+        });  
     });
-};
+}
 
 export const postTask = (req, res) => {
   const {
@@ -30,7 +28,8 @@ export const postTask = (req, res) => {
     is_completed,
     is_complex,
     subtasks,
-    position
+    position,
+    is_daily
   } = req.body;
 
   // Define tipo e query da tabela filha
@@ -43,8 +42,8 @@ export const postTask = (req, res) => {
 
   // Inserir na tabela base
   const qTask = `
-    INSERT INTO tasks (title, description, priority, due_date, is_completed, position, type)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO tasks (title, description, priority, due_date, is_completed, position, is_daily, type)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const values = [
     title,
@@ -53,6 +52,7 @@ export const postTask = (req, res) => {
     due_date,
     is_completed || false,
     position,
+    is_daily,
     type
   ];
 
@@ -68,6 +68,7 @@ export const postTask = (req, res) => {
       due_date,
       is_completed,
       position,
+      is_daily,
       type,
       subtasks: subtasks || []
     };
@@ -107,27 +108,43 @@ export const postTask = (req, res) => {
 export const deleteTask = (req, res) => {
   const taskId = req.params.id;
   const deleteSubtasksQ = "DELETE FROM subtasks WHERE parent_task_id = ?";
+
   db.query(deleteSubtasksQ, [taskId], (err) => {
     if (err) return res.sendStatus(500);
     const deleteTaskQ = "DELETE FROM tasks WHERE id = ?";
 
     db.query(deleteTaskQ, [taskId], (err2) => {
-        if (err2) return res.sendStatus(500);
-        return res.status(200).json({ message: "Tarefa excluída com sucesso" });
+      if (err2) return res.sendStatus(500);
+      return res.status(200).json({ message: "Tarefa excluída com sucesso" });
     });
   });
 };
-
 export const editTask = (req, res) => {
     const taskId = req.params.id;
-    const { title, description, priority, due_date, is_completed, subtarefas } = req.body;
+    const {
+        title,
+        description,
+        priority,
+        due_date,
+        is_completed,
+        is_complex,
+    } = req.body;
 
-    const updateTaskQ = `UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=? WHERE id=?`;
-    const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
+    const updateTaskQ = `
+        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, type=?
+        WHERE id=?
+    `;
+    const taskValues = [title, description, priority, due_date, is_completed || false, type, taskId];
+
     db.query(updateTaskQ, taskValues, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+
+        if (!is_complex || !Array.isArray(subtasks)) {
+            return res.status(200).json({ message: "Tarefa atualizada com sucesso" });
+        }
     });
-};
+}
+
 
 export const getColor = (req, res) => {
     const q = "SELECT text_color, sidebar_color, background_color, card_color, card_position FROM personalizacao WHERE id = 1";
@@ -137,6 +154,7 @@ export const getColor = (req, res) => {
             background: results[0].background_color, card: results[0].card_color, card_position: results[0].card_position});
     });
 };
+
 export const updateColor = (req, res) => {
     const { color, sidebar, background, card, card_position} = req.body;
     const q = "UPDATE personalizacao SET text_color = ?, sidebar_color = ?, background_color = ?, card_color = ?, card_position = ? WHERE id = 1";

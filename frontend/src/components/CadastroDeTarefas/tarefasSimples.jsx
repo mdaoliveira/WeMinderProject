@@ -9,16 +9,20 @@ function TarefasSimples({ onChange }) {
   const [due_date, setDueDate] = useState("");
   const [priority, setPriority] = useState("");
   const [position, setPosition] = useState("");
+  const [is_daily, setIsDaily] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     onChange({
       title,
       description,
-      due_date,
+      due_date: due_date === "" ? null : due_date,
       priority: priority === "" ? "" : parseInt(priority),
       position,
+      is_daily,
     });
-  }, [title, description, due_date, priority,position, onChange]);
+  }, [title, description, due_date, priority,position, is_daily, onChange]);
 
   return (
     <div className="space-y-4">
@@ -51,8 +55,14 @@ function TarefasSimples({ onChange }) {
           min={today}
           className="w-full p-2 border rounded-md text-black dark:bg-gray-800 dark:text-white"
           value={due_date}
-          onChange={(e) => setDueDate(e.target.value)}
+          disabled={isChecked}
+          onChange={(e) => { setDueDate(e.target.value); setInputValue(e.target.value); }}
         />
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={(e) => { if (e.target.checked) { setDueDate(""); } setIsChecked(e.target.checked); }}
+        /> Sem data
       </div>
 
       <div className="space-y-2">
@@ -86,6 +96,24 @@ function TarefasSimples({ onChange }) {
         }}
       />
 
+      </div>
+
+      <div className="space-y-2">
+        <p className="font-medium">Repetir diariamente?</p>
+        <label className="flex items-center space-x-2">
+          <input
+            type="radio"
+            checked={is_daily}
+            onChange={(e) => setIsDaily(e.target.checked)}
+          />
+          <span>Sim</span>
+          <input
+            type="radio"
+            checked={!is_daily}
+            onChange={(e) => setIsDaily(!e.target.checked)}
+          />
+          <span>Não</span>
+        </label>
       </div>
     </div>
   );

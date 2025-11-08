@@ -107,25 +107,25 @@ function AppContent() {
     }
 
     return (
-        <div className="App flex">
-            <Sidebar
-                inicioClick={inicioClicked}
-                cadastroClick={cadastroClicked}
-                exibirClick={exibirClicked}
-                agendaClick={agendaClicked}
-            configClick={configClicked}
+      <div className="App flex">
+        <Sidebar
+          inicioClick={inicioClicked}
+          cadastroClick={cadastroClicked}
+          exibirClick={exibirClicked}
+          agendaClick={agendaClicked}
+          configClick={configClicked}
         defaultColor={color} />
-            <main className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900">
-                {/* Modal de Cadastro */}
-                {modalOpen && modalType === "cadastro" && (
-                    <div className="modal-show">
-                        <CadastroDeTarefas
-                            itemClicked={itemClicked}
-                            closeModal={closeModal}
-                            setReloadCount={setReloadCount}
-                        />
-                    </div>
-                )}
+          <main className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900">
+            {/* Modal de Cadastro */}
+            {modalOpen && modalType === "cadastro" && (
+              <div className="modal-show">
+                <CadastroDeTarefas
+                    itemClicked={itemClicked}
+                    closeModal={closeModal}
+                    setReloadCount={setReloadCount}
+                />
+              </div>
+            )}
 
         {/* MODAL DE CONFIGURAÇÕES */}
         {modalOpen && modalType === 'configuracoes' && (
@@ -139,20 +139,24 @@ function AppContent() {
                 {modalOpen && modalType === "detalhes" && itemClicked && (
                       <div className="modal-show">
                           <div className="modal-content text-[color:var(--text-color)]">
-                              <h1>
-                                <b>Detalhes da Tarefa</b>
+                            <h1>
+                              <b>Detalhes da Tarefa</b>
                             </h1>
-                              <p>
-                                <strong>Título: </strong>
-                                {itemClicked.title}
+                            <p>
+                              <strong>Título: </strong>
+                              {itemClicked.title}
                             </p>
-                              <p>
-                                <strong>Descrição: </strong>
-                                {itemClicked.description}
+                            <p>
+                              <strong>Descrição: </strong>
+                              {itemClicked.description}
                             </p>
-                              <p>
-                                <strong>Prioridade: </strong>
-                                {priorityLabels[itemClicked.priority]}
+                            <p>
+                              <strong>Prioridade: </strong>
+                              {priorityLabels[itemClicked.priority]}
+                            </p>
+                            <p>
+                              <strong>Repete diariamente: </strong>
+                              {itemClicked.is_daily ? "Sim" : "Não"}
                             </p>
 
                               {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
