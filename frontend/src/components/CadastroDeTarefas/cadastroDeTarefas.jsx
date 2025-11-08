@@ -13,7 +13,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
 
   const validateForm = (data) => {
     const { title, description, due_date, subtasks, is_complex, is_daily } = data;
-    if (!title || !description || !due_date || !is_daily  ) {
+    if (!title || !description || (!due_date && !is_daily ) ) {
       alert("Todos os campos devem ser preenchidos!");
       return false;
     }
@@ -45,7 +45,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
       const { title, description, due_date, priority, position, is_daily } = simpleTask;
 
       // Passa is_complex para validar corretamente
-      if (!validateForm({ title, description, due_date, priority, is_complex: false, position, is_daily  })) return;
+      if (!validateForm({ title, description, due_date, priority, is_complex: false, is_daily  })) return;
 
       data = {
         title,

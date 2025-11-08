@@ -78,9 +78,13 @@ const Tasks = ({ onTaskClicked, reloadPage }) => {
   if(dailyTasks.length > 0) { TarefasDiarias = "Tarefas diárias "; }
 
   // Data formatada para exibir uma vez só no topo
-  const dataFormatada = new Date(todayTasks[0].due_date).toLocaleDateString("pt-BR", {
-    day: "numeric", month: "long", year: "numeric",
-  });
+  let dataFormatada = "";
+  if (todayTasks.length > 0) {
+    dataFormatada = new Date(todayTasks[0].due_date).toLocaleDateString(
+      "pt-BR",
+      { day: "numeric", month: "long", year: "numeric" }
+    );
+  }
 
   // ordenação do card
   const getCardPosition = () => {
@@ -127,10 +131,10 @@ const Tasks = ({ onTaskClicked, reloadPage }) => {
       ))}
 
       <h1 className="text-gray-700 dark:text-gray-300 text-lg font-bold mt-6 mb-4 w-full max-w-xl text-left">
-        {dataFormatada}
+        {TarefasDiarias}
       </h1>
 
-      {todayTasks.map((tarefa) => (
+      {dailyTasks.map((tarefa) => (
         Card(tarefa, onTaskClicked)
       ))}
     </div>
