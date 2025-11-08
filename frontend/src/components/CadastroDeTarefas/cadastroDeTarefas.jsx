@@ -13,7 +13,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
 
   const validateForm = (data) => {
     const { title, description, due_date, subtasks, is_complex, is_daily } = data;
-    if (!title || !description || (!due_date && !is_daily)) {
+    if (!title || !description || (!due_date && !is_daily ) ) {
       alert("Todos os campos devem ser preenchidos!");
       return false;
     }
@@ -42,10 +42,10 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
     let data = {};
 
     if (tipoTarefa === "simples") {
-      const { title, description, due_date, priority, is_daily } = simpleTask;
+      const { title, description, due_date, priority, position, is_daily } = simpleTask;
 
       // Passa is_complex para validar corretamente
-      if (!validateForm({ title, description, due_date, priority, is_complex: false, is_daily })) return;
+      if (!validateForm({ title, description, due_date, priority, is_complex: false, is_daily  })) return;
 
       data = {
         title,
@@ -54,13 +54,14 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
         priority: parseInt(priority),
         is_completed: false,
         is_complex: false,
+        position,
         is_daily
       };
     } else if (tipoTarefa === "complexa") {
-      const { title, description, due_date, priority, subtasks } = complexTask;
+      const { title, description, due_date, priority, subtasks, position } = complexTask;
 
       // Passa is_complex = true para validar subtarefas
-      if (!validateForm({ title, description, due_date, priority, subtasks, is_complex: true })) return;
+      if (!validateForm({ title, description, due_date, priority, subtasks,position, is_complex: true })) return;
 
       data = {
         title,
@@ -70,6 +71,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
         is_completed: false,
         is_complex: true,
         subtasks,
+        position,
       };
     } else {
       alert("Selecione o tipo de tarefa!");
@@ -96,9 +98,9 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
         <form
           onSubmit={addTask}
-          className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 overflow-auto max-h-[90vh]"
+          className="bg-[color:var(--card-color)] rounded-lg shadow-lg max-w-lg w-full p-6 overflow-auto max-h-[90vh]"
         >
-          <div className="flex flex-col space-y-4">
+          <div className="text-[color:var(--text-color)] flex flex-col space-y-4">
             <div>
               <label className="inline-flex items-center mr-4">
                 <input
@@ -137,7 +139,7 @@ function CadastroDeTarefas({ closeModal, setReloadCount }) {
               </button>
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
               >
                 Cadastrar
               </button>
