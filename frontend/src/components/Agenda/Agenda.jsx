@@ -62,7 +62,7 @@ const Agenda = ({ onTaskClicked, reloadPage }) => {
     });
     const calendarRef = useRef(null);
 
-    const getMonthName = (date) => {
+    const getMonthYear = (date) => {
         const months = [
             "Janeiro",
             "Fevereiro",
@@ -77,7 +77,9 @@ const Agenda = ({ onTaskClicked, reloadPage }) => {
             "Novembro",
             "Dezembro",
         ];
-        return months[date.getMonth()];
+        const monthName = months[date.getMonth()];
+        const year = date.getFullYear();
+        return `${monthName} ${year}`;
     };
 
     useEffect(() => {
@@ -196,16 +198,39 @@ const Agenda = ({ onTaskClicked, reloadPage }) => {
 
         // Atualizar eventos locais
         setEvents((prev) =>
-            prev.map((e) =>
-                e.id === event.id
-                    ? {
-                          ...e,
-                          start: event.start,
-                          end: event.end || undefined,
-                          allDay: event.allDay,
-                      }
-                    : e
-            )
+            prev.map((e) => {
+                if (e.id === event.id) {
+                    const updatedEvent = {
+                        ...e,
+                        start: event.start,
+                        end: event.end || undefined,
+                        allDay: event.allDay,
+                    };
+
+                    if (updatedEvent.extendedProps) {
+                        if (type === "task" && updatedEvent.extendedProps.task) {
+                            updatedEvent.extendedProps = {
+                                ...updatedEvent.extendedProps,
+                                task: {
+                                    ...updatedEvent.extendedProps.task,
+                                    due_date: newDate,
+                                },
+                            };
+                        } else if (type === "subtask" && updatedEvent.extendedProps.subtask) {
+                            updatedEvent.extendedProps = {
+                                ...updatedEvent.extendedProps,
+                                subtask: {
+                                    ...updatedEvent.extendedProps.subtask,
+                                    due_date: newDate,
+                                },
+                            };
+                        }
+                    }
+
+                    return updatedEvent;
+                }
+                return e;
+            })
         );
     }
 
@@ -218,20 +243,15 @@ const Agenda = ({ onTaskClicked, reloadPage }) => {
         );
     }
 
-    function handleSelect(selection) {
-        const newEvt = {
-            id: crypto.randomUUID(),
-            title: "Novo evento",
-            start: selection.start,
-            end: selection.end || undefined,
-            allDay: selection.allDay,
-            extendedProps: { type: "temp" },
-        };
-        setEvents((prev) => [...prev, newEvt]);
-    }
-
     function handleDatesSet(arg) {
-        setCurrentDate(arg.start);
+        const startOfView = new Date(arg.view.currentStart);
+        const endOfView = new Date(arg.view.currentEnd);
+
+        const middleDate = new Date(
+            startOfView.getTime() + (endOfView.getTime() - startOfView.getTime()) / 2
+        );
+
+        setCurrentDate(middleDate);
     }
 
     function handleEventDidMount(info) {
@@ -308,7 +328,7 @@ const Agenda = ({ onTaskClicked, reloadPage }) => {
             <CustomizacaoCalendarioComponent onConfigChange={setCustomizacao} />
 
             <div className="text-2xl text-gray-700 dark:text-gray-300 font-bold text-center mb-4">
-                {getMonthName(currentDate)}
+                {getMonthYear(currentDate)}
             </div>
 
             <style>
@@ -386,13 +406,10 @@ const Agenda = ({ onTaskClicked, reloadPage }) => {
                 weekends
                 events={events}
                 editable
-                selectable
-                selectMirror
                 dayMaxEventRows={3}
                 datesSet={handleDatesSet}
                 eventDrop={handleEventDrop}
                 eventResize={handleEventResize}
-                select={handleSelect}
                 eventClick={(info) => {
                     const { task, subtask } = info.event.extendedProps || {};
                     onTaskClicked?.(subtask ? { ...task, _clickedSubtask: subtask } : task);
