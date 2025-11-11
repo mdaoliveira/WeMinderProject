@@ -5,7 +5,6 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
     const [newDescricao, setNewDescricao] = useState('');
     const [newData, setNewData] = useState('');
     const [prioridade, setPrioridade] = useState('');
-    const [subtarefas, setSubtarefas] = useState([]);
 
     useEffect(() => {
         if (!itemClicked) return;
@@ -15,32 +14,29 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
         setPrioridade(itemClicked.priority || 0);
     }, [itemClicked]);
 
-    const updateTask = async (e) => {
-        e.preventDefault();
-        if (!itemClicked) return;
 
+    const updateTask = async (e) => {
         const payload = {
             title: newTitulo,
             description: newDescricao,
             due_date: newData,
             priority: prioridade,
             is_completed: false,
-            subtarefas: subtarefas
         };
-
-        const response = await fetch(`http://localhost:8800/tarefas/${itemClicked.id}`, {
+        fetch(`http://localhost:8800/tarefas/${itemClicked.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(payload)
-        });
-        if (!response.ok){
-            alert("Erro ao atualizar a tarefa.");
-        }
-        setReloadCount(prev => prev + 1);
-        closeModal();
+        })
+            .then(() => {
+                closeModal();
+                setReloadCount((prev) => prev + 1);
+            })
+            .catch((error) => console.error("Erro ao deletar registro -> ", error));
     };
+
 
      return (
          <div className="edicao-tarefas">
@@ -60,7 +56,7 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
 
                 <br />
                 <div className="botoes">
-                    <button type="submit" onClick={updateTask}>Salvar</button>
+                    <button type="submit">Salvar</button>
                     <button type="button" onClick={closeModal}>Cancelar</button>
                 </div>
             </form>
