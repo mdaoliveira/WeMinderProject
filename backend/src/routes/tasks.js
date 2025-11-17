@@ -1,13 +1,29 @@
 import express from "express";
-import { getTasks, postTask, deleteTask, editTask, editSubtask, updateColor, getColor} from "../controllers/tasks.js";
+import {
+  getTasks,
+  postTask,
+  deleteTask,
+  editTask,
+  editSubtask,
+  getColor,
+  updateColor,
+  getRelatorioTarefasConcluidas
+} from "../controllers/tasks.js";
+
 const router = express.Router();
 
-router.get("/tarefas", getTasks);
-router.post("/tarefas", postTask);
-router.delete("/tarefas/:id", deleteTask);
-router.put("/tarefas/:id", editTask);
-router.get("/color", getColor);
-router.put("/color", updateColor);
-router.put("/subtarefas/:id", editSubtask);
+// Tarefas
+router.get("/", getTasks);
+router.post("/", postTask);
+router.delete("/:id", deleteTask);
+router.put("/:id", editTask);
+router.put("/subtask/:id", editSubtask);
+
+// Cores
+router.get("/color/:id", getColor);
+router.put("/color/:id", updateColor);
+
+// Relatório
+router.get("/relatorio/concluidas", getRelatorioTarefasConcluidas);
 
 export default router;

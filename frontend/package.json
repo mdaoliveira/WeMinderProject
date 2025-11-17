@@ -16,6 +16,8 @@
     "@testing-library/user-event": "^13.5.0",
     "@windmill/react-ui": "^0.6.0",
     "autoprefixer": "^10.4.21",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
     "leaflet": "^1.9.4",
     "postcss": "^8.5.4",
     "react": "^19.1.0",

@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas";
 import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
+import TarefasConcluidas from "./components/TarefasConcluidas/TarefasConcluidas";
 import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
 import Configuracoes from "./components/Configuracoes/Configuracoes";
@@ -11,6 +12,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
 import { useReactToPrint } from "react-to-print";
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 function AppContent() {
     const [modalOpen, setModalIsOpen] = useState(false);
@@ -18,6 +20,8 @@ function AppContent() {
     const [itemClicked, setItemClicked] = useState(null);
     const [reloadCount, setReloadCount] = useState(0);
     const [color, setColor] = useState(null);
+    const [isChecked, setIsChecked] = useState(false);
+    const [showConfirmCheckbox, setShowConfirmCheckbox] = useState(false);
 
     const navigate = useNavigate();
 
@@ -31,6 +35,8 @@ function AppContent() {
         setModalIsOpen(false);
         setItemClicked(null);
         setModalType(null);
+        setIsChecked(false);
+        setShowConfirmCheckbox(false);
     }
 
     function cadastroClicked() {
@@ -45,6 +51,10 @@ function AppContent() {
 
     function exibirClicked() {
         navigate("/exibir");
+    }
+
+    function concluidasClicked() {
+        navigate("/concluidas");
     }
 
     function agendaClicked() {
@@ -68,6 +78,22 @@ function AppContent() {
                 setReloadCount((prev) => prev + 1);
             })
             .catch((error) => console.error("Erro ao deletar registro -> ", error));
+    }
+
+    function MarcarComoConcluida(id, completed) {
+        const payload = {
+            is_completed: completed,
+        };
+        fetch(`http://localhost:8800/tarefas/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        })
+            .then(() => {
+                console.log("Tarefa atualizada com sucesso");
+                setReloadCount((prev) => prev + 1);
+            })
+            .catch((error) => console.error("Erro ao atualizar tarefa -> ", error));
     }
 
     // obter os estilos do bd
@@ -127,6 +153,7 @@ function AppContent() {
                 inicioClick={inicioClicked}
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
+                concluidasClick={concluidasClicked}
                 agendaClick={agendaClicked}
                 configClick={configClicked}
                 defaultColor={color}
@@ -185,6 +212,50 @@ function AppContent() {
                                 <strong>Repete diariamente: </strong>
                                 {itemClicked.is_daily ? "Sim" : "Não"}
                             </p>
+                            <p>
+                              <input 
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  setShowConfirmCheckbox(true);
+                                }}
+                              />
+                              <strong> Marcar como concluída</strong>
+                            </p>
+
+                            {/* Confirmação customizada */}
+                            {showConfirmCheckbox && (
+                              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+                                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                                  <p className="mb-4 dark:text-gray-100">
+                                    {isChecked ? "Desmarcar" : "Marcar"} esta tarefa como concluída?
+                                  </p>
+                                  <div className="flex gap-4">
+                                    <button 
+                                      onClick={() => {
+                                        const newStatus = !isChecked;
+                                        setIsChecked(newStatus);
+                                        MarcarComoConcluida(itemClicked.id, newStatus);
+                                        setShowConfirmCheckbox(false);
+                                      }}
+                                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                                    >
+                                      Confirmar
+                                    </button>
+                                    <button 
+                                      onClick={() => {
+                                        setShowConfirmCheckbox(false);
+                                        setIsChecked(itemClicked.is_completed || false);
+                                      }}
+                                      className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
                             {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
                                 <div className="mt-6 bg-[color:var(--card-color)]">
@@ -275,6 +346,10 @@ function AppContent() {
                     <Route
                         path="/exibir"
                         element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+                    <Route
+                        path="/concluidas"
+                        element={<TarefasConcluidas onTaskClicked={clicked} reloadPage={reloadCount} />}
                     />
                     <Route
                         path="/agenda"
