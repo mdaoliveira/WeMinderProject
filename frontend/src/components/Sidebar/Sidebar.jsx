@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 
-function Sidebar({ inicioClick, cadastroClick, exibirClick, agendaClick }) {
+function Sidebar({ inicioClick, cadastroClick, exibirClick, agendaClick, rankingClick }) {
     const location = useLocation();
 
     const getButtonClass = (path) => {
@@ -47,6 +47,11 @@ function Sidebar({ inicioClick, cadastroClick, exibirClick, agendaClick }) {
                         <li>
                             <button onClick={agendaClick} className={getButtonClass("/agenda")}>
                                 Agenda
+                            </button>
+                        </li>
+                        <li>
+                            <button onClick={rankingClick} className={getButtonClass("/ranking")}>
+                                Ranking
                             </button>
                         </li>
                     </ul>

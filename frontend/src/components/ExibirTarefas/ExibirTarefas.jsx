@@ -48,8 +48,8 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
 
       setData(sortedData);
 
-      })
-      .catch((error) => console.error("Erro:", error));
+    })
+    .catch((error) => console.error("Erro:", error));
   };
 
   let ultimaDataExibida = "";

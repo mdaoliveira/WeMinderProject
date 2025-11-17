@@ -6,6 +6,7 @@ import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
+import Ranking from "./components/Ranking/Ranking";
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
@@ -41,6 +42,10 @@ function AppContent() {
 
     function agendaClicked() {
         navigate("/agenda");
+    }
+
+    function rankingClicked() {
+        navigate("/ranking");
     }
 
     function inicioClicked() {
@@ -84,6 +89,7 @@ function AppContent() {
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
                 agendaClick={agendaClicked}
+                rankingClick={rankingClicked}
             />
             <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
                 {/* Modal de Cadastro */}
@@ -210,6 +216,10 @@ function AppContent() {
                     <Route
                         path="/agenda"
                         element={<Agenda onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+                    <Route
+                        path="/ranking"
+                        element={<Ranking />}
                     />
                 </Routes>
             </main>

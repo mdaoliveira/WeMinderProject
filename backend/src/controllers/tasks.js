@@ -1,9 +1,39 @@
 import { db } from "../database/db.js";
 
+// Função para calcular pontuação baseada na prioridade da tarefa
+const calcularPontuacao = (priority) => {
+    // Prioridade 0 (Sem Prioridade): 1 ponto
+    // Prioridade 1 (Alta): 5 pontos
+    // Prioridade 2 (Média): 3 pontos
+    // Prioridade 3 (Baixa): 2 pontos
+    const pontosPorPrioridade = {
+        0: 1,
+        1: 5,
+        2: 3,
+        3: 2
+    };
+    return pontosPorPrioridade[priority] || 1;
+};
+
+// Função para atualizar pontuação do usuário
+const atualizarPontuacaoUsuario = (userId, pontos, callback) => {
+    if (!userId) {
+        return callback(null); // Se não houver userId, não atualiza
+    }
+    const updateScoreQ = `UPDATE usuarios SET pontuacao = pontuacao + ? WHERE id = ?`;
+    db.query(updateScoreQ, [pontos, userId], (err) => {
+        if (err) {
+            console.error("Erro ao atualizar pontuação:", err);
+            return callback(err);
+        }
+        callback(null);
+    });
+};
+
 export const getTasks = (req, res) => {
     const qSimpleTasks = "SELECT * FROM simpleTasks";
     const qComplexTasks = "SELECT * FROM complexTasks";
-    const qSubtasks = "SELECT * FROM subTasks";
+    const qSubtasks = "SELECT * FROM subtasks";
 
     db.query(qSimpleTasks, (errSimple, simpleTasks) => {
         if (errSimple) return res.status(500).json("Erro de servidor!");
@@ -106,25 +136,51 @@ export const deleteTask = (req, res) => {
 
 export const editTask = (req, res) => {
     const taskId = req.params.id;
-    const { title, description, priority, due_date, is_completed, subtarefas } = req.body;
+    const { title, description, priority, due_date, is_completed, subtarefas, user_id } = req.body;
 
-    if (subtarefas.length > 0) {
-        const updateTaskQ = `
-            UPDATE complexTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
-            WHERE id=?
-        `;
-        const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
-        db.query(updateTaskQ, taskValues, (err) => {
-            if (err)
-                return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
-        });
-    }
-    const updateTaskQ = `
-        UPDATE simpleTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
-        WHERE id=?
-    `;
-    const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
-    db.query(updateTaskQ, taskValues, (err) => {
-        if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+    // Verificar estado anterior da tarefa para calcular pontuação
+    const checkTaskQ = subtarefas && subtarefas.length > 0 
+        ? "SELECT is_completed, priority FROM complexTasks WHERE id = ?"
+        : "SELECT is_completed, priority FROM simpleTasks WHERE id = ?";
+
+    db.query(checkTaskQ, [taskId], (errCheck, results) => {
+        if (errCheck) {
+            return res.status(500).json({ message: "Erro ao verificar tarefa", error: errCheck });
+        }
+
+        // Calcular pontuação se tarefa foi marcada como concluída
+        if (results && results.length > 0 && user_id) {
+            const previousTask = results[0];
+            const wasCompleted = previousTask.is_completed === true || previousTask.is_completed === 1;
+            const isNowCompleted = is_completed === true || is_completed === 1;
+            
+            if (!wasCompleted && isNowCompleted) {
+                const taskPriority = priority !== undefined ? priority : previousTask.priority;
+                const pontos = calcularPontuacao(taskPriority);
+                atualizarPontuacaoUsuario(user_id, pontos, () => {});
+            }
+        }
+
+        // Atualizar a tarefa (mantendo padrão original)
+        if (subtarefas && subtarefas.length > 0) {
+            const updateTaskQ = `
+                UPDATE complexTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
+                WHERE id=?
+            `;
+            const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
+            db.query(updateTaskQ, taskValues, (err) => {
+                if (err)
+                    return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+            });
+        } else {
+            const updateTaskQ = `
+                UPDATE simpleTasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
+                WHERE id=?
+            `;
+            const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
+            db.query(updateTaskQ, taskValues, (err) => {
+                if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+            });
+        }
     });
 };

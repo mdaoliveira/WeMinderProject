@@ -5,6 +5,7 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
     const [newDescricao, setNewDescricao] = useState('');
     const [newData, setNewData] = useState('');
     const [prioridade, setPrioridade] = useState('');
+    const [isCompleted, setIsCompleted] = useState(false);
     const [subtarefas, setSubtarefas] = useState([]);
 
     useEffect(() => {
@@ -13,19 +14,26 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
         setNewDescricao(itemClicked.description || '');
         setNewData(itemClicked.due_date ? itemClicked.due_date.slice(0, 10) : '');
         setPrioridade(itemClicked.priority || 0);
+        setIsCompleted(itemClicked.is_completed || false);
+        setSubtarefas(itemClicked.subtasks || []);
     }, [itemClicked]);
 
     const updateTask = async (e) => {
         e.preventDefault();
         if (!itemClicked) return;
 
+        // Obter user_id do localStorage ou usar um valor padrão (1) para testes
+        // Em produção, isso deve vir do sistema de autenticação
+        const userId = localStorage.getItem('userId') || 1;
+
         const payload = {
             title: newTitulo,
             description: newDescricao,
             due_date: newData,
             priority: prioridade,
-            is_completed: false,
-            subtarefas: subtarefas
+            is_completed: isCompleted,
+            subtarefas: subtarefas,
+            user_id: parseInt(userId)
         };
 
         const response = await fetch(`http://localhost:8800/tarefas/${itemClicked.id}`, {
@@ -56,6 +64,17 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
 
                 <label className="content-cadastro">Data:</label>
                 <input type="date" value={newData} onChange={(e) => setNewData(e.target.value)} />
+                <br />
+
+                <label className="content-cadastro" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+                    <input 
+                        type="checkbox" 
+                        checked={isCompleted} 
+                        onChange={(e) => setIsCompleted(e.target.checked)}
+                        style={{ width: '1.2rem', height: '1.2rem' }}
+                    />
+                    <span>Marcar como concluída</span>
+                </label>
                 <br />  
 
                 <br />
