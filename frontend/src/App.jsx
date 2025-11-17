@@ -146,7 +146,7 @@ function AppContent() {
                     <img
                         src="/images/print%20symbol.png"
                         alt="Imprimir página"
-                        style={{ height: 70, cursor: "pointer" }}
+                        className="w-14 h-14 cursor-pointer"
                         onClick={reactToPrintFn}
                     ></img>
                 )}
