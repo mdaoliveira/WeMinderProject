@@ -10,46 +10,46 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
 
   const fetchTarefas = () => {
     fetch("http://localhost:8800/tarefas")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         const sortedData = data.sort((a, b) => {
-        const dataA = new Date(a.due_date);
-        const dataB = new Date(b.due_date);
+          const dataA = new Date(a.due_date);
+          const dataB = new Date(b.due_date);
 
-        
+          if (dataA.getTime() !== dataB.getTime()) {
+            return dataA - dataB;
+          }
 
+          // se prioridade é zero
+          let aIsZero;
+          if (a.priority === 0) {
+            aIsZero = 1;
+          } else {
+            aIsZero = 0;
+          }
+          let bIsZero;
+          if (b.priority === 0) {
+            bIsZero = 1;
+          } else {
+            bIsZero = 0;
+          }
+          
+          // ir por último
+          if (aIsZero !== bIsZero) {
+            return aIsZero - bIsZero;
+          }
 
+          return a.priority - b.priority;
+        });
 
-        if (dataA.getTime() !== dataB.getTime()) {
-          return dataA - dataB;
-        }
-
-        // se prioridade é zero
-        let aIsZero;
-        if (a.priority === 0) {
-          aIsZero = 1;
-        } else {
-          aIsZero = 0;
-        }
-        let bIsZero;
-        if (b.priority === 0) {
-          bIsZero = 1;
-        } else {
-          bIsZero = 0;
-        }
-        
-        // ir por último
-        if (aIsZero !== bIsZero) {
-          return aIsZero - bIsZero;
-        }
-
-        return a.priority - b.priority;
-      });
-
-      setData(sortedData);
-
-    })
-    .catch((error) => console.error("Erro:", error));
+        setData(sortedData);
+      })
+      .catch((error) => console.error("Erro:", error));
   };
 
   let ultimaDataExibida = "";

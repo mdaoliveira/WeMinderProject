@@ -36,13 +36,22 @@ export const getTasks = (req, res) => {
     const qSubtasks = "SELECT * FROM subtasks";
 
     db.query(qSimpleTasks, (errSimple, simpleTasks) => {
-        if (errSimple) return res.status(500).json("Erro de servidor!");
+        if (errSimple) {
+            console.error("Erro ao buscar tarefas simples:", errSimple);
+            return res.status(500).json({ message: "Erro de servidor!", error: errSimple.message });
+        }
 
         db.query(qComplexTasks, (errComplex, complexTasks) => {
-            if (errComplex) return res.status(500).json("Erro de servidor!");
+            if (errComplex) {
+                console.error("Erro ao buscar tarefas complexas:", errComplex);
+                return res.status(500).json({ message: "Erro de servidor!", error: errComplex.message });
+            }
 
             db.query(qSubtasks, (errSub, subtasks) => {
-                if (errSub) return res.status(500).json("Erro de servidor!");
+                if (errSub) {
+                    console.error("Erro ao buscar subtarefas:", errSub);
+                    return res.status(500).json({ message: "Erro de servidor!", error: errSub.message });
+                }
 
                 const complexWithSubtasks = complexTasks.map((task) => {
                     const relatedSubtasks = subtasks.filter(
