@@ -25,6 +25,7 @@ function AppContent() {
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/SignupAndLogin', { replace: true });
+            setIsAuthenticated(false);
         } else {
             setIsAuthenticated(true);
         }
@@ -94,11 +95,14 @@ function AppContent() {
 
     return (
         <div className="App flex">
-            <Sidebar
+            {isAuthenticated &&(
+                <Sidebar
                 inicioClick={inicioClicked}
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
-            />
+                />
+            )}
+            
             <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
                 {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
