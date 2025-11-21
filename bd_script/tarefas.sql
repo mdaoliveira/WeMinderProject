@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS complexTasks;
 DROP TABLE IF EXISTS simpleTasks;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS personalizacao;
+DROP TABLE IF EXISTS lixeira;
+DROP TABLE IF EXISTS subtasks_lixeira;
 
 -- =========================================================
 -- 1. TABELA GENÉRICA DE TAREFAS
