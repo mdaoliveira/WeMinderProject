@@ -127,6 +127,36 @@ export default function Pomodoro() {
         return 100 - (secondsLeft / total) * 100;
     }, [secondsLeft, durations, mode]);
 
+    // Cores dinâmicas baseadas no tema
+    const getTimerColors = () => {
+        const isDark =
+            window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (isDark) {
+            return {
+                progress: "rgb(255 255 255 / 0.9)",
+                track: "rgb(255 255 255 / 0.08)",
+                bg: "bg-black/70",
+                border: "border-white/10",
+            };
+        } else {
+            return {
+                progress: "rgb(24 24 27 / 0.9)",
+                track: "rgb(24 24 27 / 0.08)",
+                bg: "bg-white/70",
+                border: "border-zinc-900/10",
+            };
+        }
+    };
+
+    const [timerColors, setTimerColors] = useState(getTimerColors());
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        const handleChange = () => setTimerColors(getTimerColors());
+        mediaQuery.addEventListener("change", handleChange);
+        return () => mediaQuery.removeEventListener("change", handleChange);
+    }, []);
+
     // Notificação simples
     function notify(title) {
         try {
@@ -174,8 +204,8 @@ export default function Pomodoro() {
             onClick={() => switchMode(m)}
             className={`px-3 py-1 rounded-full text-sm transition border ${
                 mode === m
-                    ? "bg-white text-black border-white"
-                    : "border-white/20 hover:bg-white/10"
+                    ? "bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-black dark:border-white"
+                    : "border-zinc-900/20 hover:bg-zinc-900/10 dark:border-white/20 dark:hover:bg-white/10"
             }`}
         >
             {label}
@@ -183,7 +213,7 @@ export default function Pomodoro() {
     );
 
     return (
-        <div className="min-h-screen text-zinc-100 flex items-center justify-center p-4">
+        <div className="min-h-screen text-zinc-900 dark:text-zinc-100 flex items-center justify-center p-4">
             <div className="w-full max-w-3xl">
                 <header className="flex items-center justify-between gap-3 mb-6">
                     <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Pomodoro</h1>
@@ -197,16 +227,18 @@ export default function Pomodoro() {
                 {/* Timer + Lateral */}
                 <div className="grid md:grid-cols-[1fr_320px] gap-6">
                     {/* Timer Card */}
-                    <div className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 shadow-xl">
+                    <div className="bg-zinc-900/5 dark:bg-white/5 backdrop-blur rounded-2xl p-6 border border-zinc-900/10 dark:border-white/10 shadow-xl">
                         <div className="flex flex-col items-center">
                             <div className="relative w-64 h-64 mb-6 select-none">
                                 <div
                                     className="absolute inset-0 rounded-full"
                                     style={{
-                                        background: `conic-gradient(rgb(255 255 255 / 0.9) ${percent}%, rgb(255 255 255 / 0.08) ${percent}%)`,
+                                        background: `conic-gradient(${timerColors.progress} ${percent}%, ${timerColors.track} ${percent}%)`,
                                     }}
                                 />
-                                <div className="absolute inset-2 rounded-full bg-black/70 backdrop-blur border border-white/10 flex items-center justify-center">
+                                <div
+                                    className={`absolute inset-2 rounded-full ${timerColors.bg} backdrop-blur border ${timerColors.border} flex items-center justify-center`}
+                                >
                                     <span className="tabular-nums text-6xl font-medium tracking-tight">
                                         {formatTime(secondsLeft)}
                                     </span>
@@ -217,19 +249,19 @@ export default function Pomodoro() {
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={toggle}
-                                    className="px-5 py-2 rounded-xl bg-white text-black font-medium hover:opacity-90 active:opacity-80 transition"
+                                    className="px-5 py-2 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-black font-medium hover:opacity-90 active:opacity-80 transition"
                                 >
                                     {running ? "Pausar" : "Iniciar"}
                                 </button>
                                 <button
                                     onClick={reset}
-                                    className="px-4 py-2 rounded-xl border border-white/20 hover:bg-white/10 transition"
+                                    className="px-4 py-2 rounded-xl border border-zinc-900/20 hover:bg-zinc-900/10 dark:border-white/20 dark:hover:bg-white/10 transition"
                                 >
                                     Resetar
                                 </button>
                                 <button
                                     onClick={skip}
-                                    className="px-4 py-2 rounded-xl border border-white/20 hover:bg-white/10 transition"
+                                    className="px-4 py-2 rounded-xl border border-zinc-900/20 hover:bg-zinc-900/10 dark:border-white/20 dark:hover:bg-white/10 transition"
                                 >
                                     Pular
                                 </button>
@@ -238,16 +270,18 @@ export default function Pomodoro() {
                     </div>
 
                     {/* Configurações */}
-                    <aside className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 shadow-xl">
+                    <aside className="bg-zinc-900/5 dark:bg-white/5 backdrop-blur rounded-2xl p-6 border border-zinc-900/10 dark:border-white/10 shadow-xl">
                         <h2 className="text-lg font-semibold mb-4">Configurações</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm text-white/70">Foco (min)</label>
+                                <label className="text-sm text-zinc-900/70 dark:text-white/70">
+                                    Foco (min)
+                                </label>
                                 <input
                                     type="number"
                                     min={1}
                                     placeholder="Mínimo 1 minuto"
-                                    className="mt-1 w-full bg-transparent border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    className="mt-1 w-full bg-transparent border border-zinc-900/20 dark:border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900/30 dark:focus:ring-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     value={tempInputs.focus}
                                     onChange={(e) => {
                                         const value = e.target.value;
@@ -281,14 +315,14 @@ export default function Pomodoro() {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-sm text-white/70">
+                                    <label className="text-sm text-zinc-900/70 dark:text-white/70">
                                         Pausa Curta (min)
                                     </label>
                                     <input
                                         type="number"
                                         min={1}
                                         placeholder="Mínimo 1 minuto"
-                                        className="mt-1 w-full bg-transparent border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        className="mt-1 w-full bg-transparent border border-zinc-900/20 dark:border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900/30 dark:focus:ring-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         value={tempInputs.short}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -323,14 +357,14 @@ export default function Pomodoro() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-sm text-white/70">
+                                    <label className="text-sm text-zinc-900/70 dark:text-white/70">
                                         Pausa Longa (min)
                                     </label>
                                     <input
                                         type="number"
                                         min={1}
                                         placeholder="Mínimo 1 minuto"
-                                        className="mt-1 w-full bg-transparent border border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        className="mt-1 w-full bg-transparent border border-zinc-900/20 dark:border-white/20 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900/30 dark:focus:ring-white/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         value={tempInputs.long}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -366,11 +400,13 @@ export default function Pomodoro() {
                                 </div>
                             </div>
 
-                            <hr className="border-white/10" />
+                            <hr className="border-zinc-900/10 dark:border-white/10" />
 
                             {/* Status */}
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-white/70">Modo atual</span>
+                                <span className="text-zinc-900/70 dark:text-white/70">
+                                    Modo atual
+                                </span>
                                 <span className="font-medium">
                                     {mode === "focus"
                                         ? "Foco"
@@ -380,12 +416,10 @@ export default function Pomodoro() {
                                 </span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-white/70">Pomodoros concluídos</span>
+                                <span className="text-zinc-900/70 dark:text-white/70">
+                                    Pomodoros concluídos
+                                </span>
                                 <span className="font-medium">{pomodorosDone}</span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-white/70">Streak de foco</span>
-                                <span className="font-medium">{focusStreak % 4} / 4</span>
                             </div>
 
                             <button
@@ -393,7 +427,7 @@ export default function Pomodoro() {
                                     setPomodorosDone(0);
                                     setFocusStreak(0);
                                 }}
-                                className="mt-3 w-full border border-white/20 rounded-xl px-4 py-2 text-sm hover:bg-white/10"
+                                className="mt-3 w-full border border-zinc-900/20 dark:border-white/20 rounded-xl px-4 py-2 text-sm hover:bg-zinc-900/10 dark:hover:bg-white/10"
                             >
                                 Zerar contadores
                             </button>
