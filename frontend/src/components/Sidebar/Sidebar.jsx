@@ -2,14 +2,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 
-function Sidebar({ inicioClick, cadastroClick, exibirClick, agendaClick, configClick}) {
+function Sidebar({
+    inicioClick,
+    cadastroClick,
+    exibirClick,
+    agendaClick,
+    configClick,
+    pomodoroClicked,
+    lixeiraClick}) {
     const location = useLocation();
 
-  const getButtonClass = (path) => {
-    const base = "w-full text-left rounded-md px-3 py-2 transition-colors duration-200";
-    const inactive = "hover:text-[color:var(--text-color)] dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700";
-    return location.pathname === path ? `${base}` : `${base} ${inactive}`;
-  };
+    const getButtonClass = (path) => {
+        const base = "w-full text-left rounded-md px-3 py-2 transition-colors duration-200";
+        const inactive =
+            "hover:text-[color:var(--text-color)] dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700";
+        return location.pathname === path ? `${base}` : `${base} ${inactive}`;
+    };
 
     return (
         <aside className="z-30 w-64 h-screen flex-col hidden lg:flex 
@@ -47,12 +55,28 @@ function Sidebar({ inicioClick, cadastroClick, exibirClick, agendaClick, configC
                                 Agenda
                             </button>
                         </li>
+                          <li>
+                            <button onClick={lixeiraClick} className={getButtonClass("/lixeira")}>
+                                Lixeira
+                            </button>
+                        </li>
                       <li>
-          <button onClick={configClick} className={getButtonClass("/configuracoes")}>
-            Configurações
-          </button>
-        </li>
-      </ul>
+                            <button
+                                onClick={pomodoroClicked}
+                                className={getButtonClass("/pomodoro")}
+                            >
+                                Pomodoro
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                onClick={configClick}
+                                className={getButtonClass("/configuracoes")}
+                            >
+                                Configurações
+                            </button>
+                        </li>
+                    </ul>
                 </div>
 
                 {/* Botão Sair na base */}

@@ -7,9 +7,11 @@ import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
 import Configuracoes from "./components/Configuracoes/Configuracoes";
+import Pomodoro from "./components/Pomodoro/pomodoro";
 import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
+import Lixeira from './components/Lixeira/Lixeira';
 import { useReactToPrint } from "react-to-print";
 
 function AppContent() {
@@ -18,8 +20,10 @@ function AppContent() {
     const [itemClicked, setItemClicked] = useState(null);
     const [reloadCount, setReloadCount] = useState(0);
     const [color, setColor] = useState(null);
+    const [selectDelete, setSelectDelete] = useState(null);
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     function clicked(item) {
         setModalIsOpen(true);
@@ -27,9 +31,16 @@ function AppContent() {
         setItemClicked(item);
     }
 
+    function clickedDelete(item) {
+        setModalIsOpen(true);
+        setModalType('detalhesLixeira');
+        setSelectDelete(item);
+    }
+
     function closeModal() {
         setModalIsOpen(false);
         setItemClicked(null);
+        setSelectDelete(null);
         setModalType(null);
     }
 
@@ -47,21 +58,25 @@ function AppContent() {
         navigate("/exibir");
     }
 
+    function lixeiraClicked() {
+        navigate('/lixeira');
+    }
+
     function agendaClicked() {
         navigate("/agenda");
+    }
+
+    function pomodoroClicked() {
+        navigate("/pomodoro");
     }
 
     function inicioClicked() {
         navigate("/");
     }
 
-    function ExcluirTarefas(id, subtarefas) {
-        const payload = {
-            subtarefas: subtarefas,
-        };
-        fetch(`http://localhost:8800/tarefas/${id}`, {
-            method: "DELETE",
-            body: JSON.stringify(payload),
+    function ExcluirTarefas(id) {
+        fetch(`http://localhost:8800/lixeira/${id}`, {
+            method: "PUT"
         })
             .then(() => {
                 closeModal();
@@ -128,18 +143,23 @@ function AppContent() {
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
                 agendaClick={agendaClicked}
+                pomodoroClicked={pomodoroClicked}
                 configClick={configClicked}
                 defaultColor={color}
+                lixeiraClick={lixeiraClicked}
             />
             <main
                 className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900"
                 ref={contentRef}
             >
-                <img
-                    src="/images/print%20symbol.png"
-                    className="w-14 h-14 text-black dark:text-white"
-                    onClick={reactToPrintFn}
-                ></img>
+                {location.pathname !== "/pomodoro" && (
+                    <img
+                        src="/images/print%20symbol.png"
+                        alt="Imprimir página"
+                        className="w-14 h-14 cursor-pointer"
+                        onClick={reactToPrintFn}
+                    ></img>
+                )}
                 {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
                     <div className="modal-show">
@@ -267,6 +287,49 @@ function AppContent() {
                     </div>
                 )}
 
+                {/* Modal de Detalhes Lixeira*/}
+                {modalOpen && modalType === 'detalhesLixeira' && selectDelete && (
+                <div className="modal-show">
+                    <div className="modal-content text-[color:var(--text-color)]">
+                    <h1><b>Detalhes da Tarefa</b></h1>
+                    <p><strong>Título: </strong>{selectDelete.title}</p>
+                    <p><strong>Descrição: </strong>{selectDelete.description}</p>
+                    <p><strong>Prioridade: </strong>{priorityLabels[selectDelete.priority]}</p>
+                    <p><strong>Data: </strong>{new Date(selectDelete.due_date).toLocaleDateString("pt-BR")}</p>
+
+                    {selectDelete.subtasks && selectDelete.subtasks.length > 0 && (
+                        <div className="mt-6 bg-[color:var(--card-color)]">
+                        <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">Subtarefa</h2>
+                        {selectDelete.subtasks.map((sub, index) => (
+                            <div key={index} className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-[color:var(--card-color)] dark:bg-gray-900">
+                            <hr className="border-gray-300 dark:border-gray-700 mb-3" />
+                            <p className="dark:text-gray-200 mb-1">
+                                <strong>Título: </strong>{sub.title}
+                            </p>
+                            <p className="dark:text-gray-300 mb-1">
+                                <strong>Descrição: </strong>{sub.description}
+                            </p>
+                            <p className="dark:text-gray-300">
+                                <strong>Data: </strong>{new Date(sub.due_date).toLocaleDateString("pt-BR", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric"
+                                })}
+                            </p>
+                            </div>
+                        ))}
+                        </div>
+                    )}
+
+                    <div className="flex justify-center items-center pt-4">
+                        <button type="button" onClick={closeModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+                        >Fechar
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                )}
+
                 <Routes>
                     <Route
                         path="/"
@@ -279,6 +342,11 @@ function AppContent() {
                     <Route
                         path="/agenda"
                         element={<Agenda onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+                    <Route path="/pomodoro" element={<Pomodoro />} />
+                    <Route 
+                        path="/lixeira" 
+                        element={<Lixeira onTaskClicked={clickedDelete} reloadPage={reloadCount} />} 
                     />
                 </Routes>
             </main>
