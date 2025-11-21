@@ -7,9 +7,8 @@ import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
 import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
 import Configuracoes from "./components/Configuracoes/Configuracoes";
-import Pomodoro from "./components/Pomodoro/pomodoro";
 import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
 import { useReactToPrint } from "react-to-print";
 
@@ -21,7 +20,6 @@ function AppContent() {
     const [color, setColor] = useState(null);
 
     const navigate = useNavigate();
-    const location = useLocation();
 
     function clicked(item) {
         setModalIsOpen(true);
@@ -51,10 +49,6 @@ function AppContent() {
 
     function agendaClicked() {
         navigate("/agenda");
-    }
-
-    function pomodoroClicked() {
-        navigate("/pomodoro");
     }
 
     function inicioClicked() {
@@ -134,7 +128,6 @@ function AppContent() {
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
                 agendaClick={agendaClicked}
-                pomodoroClicked={pomodoroClicked}
                 configClick={configClicked}
                 defaultColor={color}
             />
@@ -142,14 +135,11 @@ function AppContent() {
                 className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900"
                 ref={contentRef}
             >
-                {location.pathname !== "/pomodoro" && (
-                    <img
-                        src="/images/print%20symbol.png"
-                        alt="Imprimir página"
-                        className="w-14 h-14 cursor-pointer"
-                        onClick={reactToPrintFn}
-                    ></img>
-                )}
+                <img
+                    src="/images/print%20symbol.png"
+                    className="w-14 h-14 text-black dark:text-white"
+                    onClick={reactToPrintFn}
+                ></img>
                 {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
                     <div className="modal-show">
@@ -290,7 +280,6 @@ function AppContent() {
                         path="/agenda"
                         element={<Agenda onTaskClicked={clicked} reloadPage={reloadCount} />}
                     />
-                    <Route path="/pomodoro" element={<Pomodoro />} />
                 </Routes>
             </main>
         </div>
