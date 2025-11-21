@@ -1,16 +1,32 @@
 import express from "express";
-import { getTasks, postTask, editTask, editSubtask, 
-    updateColor, getColor, getLixeira, enviaLixeira, 
-    excluirPermanente, excluirTudoPermanente, 
-    restaurarTarefa, restaurarTudo} from "../controllers/tasks.js";
+import {
+  getTasks,
+  postTask,
+  editTask,
+  editSubtask, 
+  getColor,
+  updateColor,
+  getRelatorioTarefasConcluidas, 
+  getLixeira, 
+  enviaLixeira, 
+  excluirPermanente, 
+  excluirTudoPermanente, 
+  restaurarTarefa, 
+  restaurarTudo} from "../controllers/tasks.js";
+
 const router = express.Router();
 
-router.get("/tarefas", getTasks);
-router.post("/tarefas", postTask);
-router.put("/tarefas/:id", editTask);
-router.get("/color", getColor);
-router.put("/color", updateColor);
-router.put("/subtarefas/:id", editSubtask);
+// Tarefas
+router.get("/", getTasks);
+router.post("/", postTask);
+router.put("/:id", editTask);
+router.put("/subtask/:id", editSubtask);
+// Cores
+router.get("/color/:id", getColor);
+router.put("/color/:id", updateColor);
+// Relatório
+router.get("/relatorio/concluidas", getRelatorioTarefasConcluidas);
+// Lixeira
 router.get("/lixeira", getLixeira);
 router.put("/lixeira/:id", enviaLixeira);
 router.delete("/excluir/:id", excluirPermanente);

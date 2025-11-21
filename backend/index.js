@@ -1,10 +1,16 @@
 import express from "express";
-import taskRoutes from "./src/routes/tasks.js";
 import cors from "cors";
+import tasksRouter from "./src/routes/tasks.js";
 
 const app = express();
 
-app.use(express.json());
 app.use(cors());
-app.use("/", taskRoutes);
-app.listen(8800);
+app.use(express.json());
+
+// Rotas
+app.use("/tarefas", tasksRouter);
+app.use("/color", tasksRouter);
+
+app.listen(8800, () => {
+    console.log("Backend rodando na porta 8800");
+});

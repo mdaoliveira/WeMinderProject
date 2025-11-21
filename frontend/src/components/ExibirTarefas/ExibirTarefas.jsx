@@ -12,7 +12,14 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
     fetch("http://localhost:8800/tarefas")
       .then((response) => response.json())
       .then((data) => {
-        const sortedData = data.sort((a, b) => {
+        console.log("Todas as tarefas:", data);
+        
+        // Filtrar apenas tarefas NÃO concluídas
+        const tarefasNaoConcluidas = data.filter((tarefa) => tarefa.is_completed === false || tarefa.is_completed === 0);
+        
+        console.log("Tarefas não concluídas:", tarefasNaoConcluidas);
+
+        const sortedData = tarefasNaoConcluidas.sort((a, b) => {
           const dataA = new Date(a.due_date);
           const dataB = new Date(b.due_date);
 
@@ -20,27 +27,17 @@ const ExibirTarefas = ({ onTaskClicked, reloadPage }) => {
             return dataA - dataB;
           }
 
-          // se prioridade é zero
-          let aIsZero;
-          if (a.priority === 0) {
-            aIsZero = 1;
-          } else {
-            aIsZero = 0;
-          }
-          let bIsZero;
-          if (b.priority === 0) {
-            bIsZero = 1;
-          } else {
-            bIsZero = 0;
-          }
+          let aIsZero = a.priority === 0 ? 1 : 0;
+          let bIsZero = b.priority === 0 ? 1 : 0;
           
-          // ir por último
           if (aIsZero !== bIsZero) {
             return aIsZero - bIsZero;
           }
 
           return a.priority - b.priority;
         });
+        
+        console.log("Dados ordenados:", sortedData);
         setData(sortedData);
       })
       .catch((error) => console.error("Erro:", error));

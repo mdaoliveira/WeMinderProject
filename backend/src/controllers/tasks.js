@@ -140,19 +140,72 @@ export const editTask = (req, res) => {
         due_date,
         is_completed,
         is_complex,
+        subtasks,
         position,
     } = req.body;
 
-    const updateTaskQ = `
-        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, position=?
-        WHERE id=?
-    `;
-    const taskValues = [title, description, priority, due_date, is_completed|| false, position, taskId];
+    // Construir query dinamicamente com apenas os campos fornecidos
+    const updates = [];
+    const values = [];
 
-    db.query(updateTaskQ, taskValues, (err) => {
-        if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
+    if (title !== undefined) {
+        updates.push("title=?");
+        values.push(title);
+    }
+    if (description !== undefined) {
+        updates.push("description=?");
+        values.push(description);
+    }
+    if (priority !== undefined) {
+        updates.push("priority=?");
+        values.push(priority);
+    }
+    if (due_date !== undefined) {
+        updates.push("due_date=?");
+        values.push(due_date);
+    }
+    if (is_completed !== undefined) {
+        updates.push("is_completed=?");
+        values.push(is_completed);
+    }
+    if (position !== undefined){
+      updates.push("position=?");
+      values.push(position);
+    }
 
-        if (!is_complex || !Array.isArray(subtasks)) {
+    // Se nenhum campo foi fornecido, retorna erro
+    if (updates.length === 0) {
+        return res.status(400).json({ message: "Nenhum campo para atualizar" });
+    }
+
+    values.push(taskId);
+
+    const updateTaskQ = `UPDATE tasks SET ${updates.join(", ")} WHERE id=?`;
+
+    db.query(updateTaskQ, values, (err) => {
+        if (err) {
+            console.error("Erro ao atualizar tarefa:", err);
+            return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err.message });
+        }
+
+        // Se for complexa e tiver subtarefas, atualiza as subtarefas
+        if (is_complex && Array.isArray(subtasks) && subtasks.length > 0) {
+            const updateSubtaskQ = `
+                UPDATE subtasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, position=?
+                WHERE id=?
+            `;
+            let completed = 0;
+            subtasks.forEach((sub) => {
+                const subValues = [sub.title, sub.description || null, sub.priority, sub.due_date, sub.is_completed|| false, position, sub.id];
+                db.query(updateSubtaskQ, subValues, (err2) => {
+                    if (err2) console.error("Erro ao atualizar subtarefa:", err2);
+                    completed++;
+                    if (completed === subtasks.length) {
+                        return res.status(200).json({ message: "Tarefa atualizada com sucesso" });
+                    }
+                });
+            });
+        } else {
             return res.status(200).json({ message: "Tarefa atualizada com sucesso" });
         }
     });
@@ -393,6 +446,44 @@ export const excluirTudoPermanente = (req, res) => {
 
                 return res.status(200).json({ message: "Todas as tarefas e subtarefas excluídas permanentemente" });
             });
+        });
+    });
+};
+
+
+export const getRelatorioTarefasConcluidas = (req, res) => {
+    const { dataInicio, dataFim } = req.query;
+
+    let query = "SELECT * FROM tasks WHERE is_completed = 1";
+    const params = [];
+
+    if (dataInicio && dataFim) {
+        query += " AND DATE(due_date) BETWEEN ? AND ?";
+        params.push(dataInicio, dataFim);
+    }
+
+    query += " ORDER BY due_date ASC, priority ASC";
+
+    db.query(query, params, (err, tarefas) => {
+        if (err) {
+            console.error("Erro ao gerar relatório:", err);
+            return res.status(500).json({ message: "Erro ao gerar relatório", error: err.message });
+        }
+
+        const resumo = {
+            total: tarefas.length,
+            porPrioridade: {
+                baixa: tarefas.filter(t => t.priority === 1).length,
+                media: tarefas.filter(t => t.priority === 2).length,
+                alta: tarefas.filter(t => t.priority === 3).length,
+            },
+            dataGeracao: new Date().toLocaleDateString("pt-BR"),
+            intervalo: dataInicio && dataFim ? `${dataInicio} até ${dataFim}` : "Todas as tarefas"
+        };
+
+        return res.status(200).json({
+            resumo,
+            tarefas
         });
     });
 };

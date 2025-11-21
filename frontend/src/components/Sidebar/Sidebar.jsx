@@ -6,6 +6,7 @@ function Sidebar({
     inicioClick,
     cadastroClick,
     exibirClick,
+    concluidasClick, 
     agendaClick,
     configClick,
     pomodoroClicked,
@@ -48,6 +49,11 @@ function Sidebar({
                         <li>
                             <button onClick={exibirClick} className={getButtonClass("/exibir")}>
                                 Exibir Tarefas
+                            </button>
+                        </li>
+                        <li>
+                            <button onClick={concluidasClick} className={getButtonClass("/concluidas")}>
+                                Tarefas Concluídas
                             </button>
                         </li>
                         <li>

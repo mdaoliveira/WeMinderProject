@@ -17,12 +17,18 @@ const isDaily = (task) => {
 const Tasks = ({ onTaskClicked, reloadPage }) => {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
+  const fetchTarefas = () => {
     fetch("http://localhost:8800/tarefas")
       .then((response) => response.json())
       .then((data) => {
-        // Ordena as tarefas por data e prioridade
-        const sortedData = data.sort((a, b) => {
+        console.log("Todas as tarefas:", data);
+        
+        // Filtrar apenas tarefas NÃO concluídas
+        const tarefasNaoConcluidas = data.filter((tarefa) => tarefa.is_completed === false || tarefa.is_completed === 0);
+        
+        console.log("Tarefas não concluídas:", tarefasNaoConcluidas);
+
+        const sortedData = tarefasNaoConcluidas.sort((a, b) => {
           const dataA = new Date(a.due_date);
           const dataB = new Date(b.due_date);
 
@@ -30,29 +36,24 @@ const Tasks = ({ onTaskClicked, reloadPage }) => {
             return dataA - dataB;
           }
 
-          let aIsZero;
-          if (a.priority === 0) {
-            aIsZero = 1;
-          } else {
-            aIsZero = 0;
-          }
-          let bIsZero;
-          if (b.priority === 0) {
-            bIsZero = 1;
-          } else {
-            bIsZero = 0;
-          }
+          let aIsZero = a.priority === 0 ? 1 : 0;
+          let bIsZero = b.priority === 0 ? 1 : 0;
           
-          // ir por último
           if (aIsZero !== bIsZero) {
             return aIsZero - bIsZero;
           }
 
           return a.priority - b.priority;
         });
+        
+        console.log("Dados ordenados:", sortedData);
         setData(sortedData);
       })
       .catch((error) => console.error("Erro:", error));
+  };
+
+  useEffect(() => {
+    fetchTarefas();
   }, [reloadPage]);
 
   // tarefas do dia
