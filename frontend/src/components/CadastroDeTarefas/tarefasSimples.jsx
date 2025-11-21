@@ -92,7 +92,7 @@ function TarefasSimples({ onChange }) {
         onPositionChange={(coords) => {
           // ✅ protege contra null
           const posicao = coords && coords.length === 2 ? coords.join(",") : null;
-          
+          setPosition(posicao);
         }}
       />
 

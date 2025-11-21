@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import MapaInterativo , {BuscaLocal, handleBuscar}from '../Mapa/Mapa';
+import MapaInterativo from '../Mapa/Mapa';
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -127,9 +127,9 @@ function TarefasComplexas({ onChange }) {
         
         mostrarBotao={true}
         onPositionChange={(coords) => {
-          // ✅ protege contra null
           const posicao = coords && coords.length === 2 ? coords.join(",") : null;
-          
+          setPosition(posicao);
+
         }}
       />
 

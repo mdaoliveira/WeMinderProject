@@ -140,7 +140,8 @@ export const editTask = (req, res) => {
         due_date,
         is_completed,
         is_complex,
-        subtasks
+        subtasks,
+        position,
     } = req.body;
 
     // Construir query dinamicamente com apenas os campos fornecidos
@@ -186,12 +187,12 @@ export const editTask = (req, res) => {
         // Se for complexa e tiver subtarefas, atualiza as subtarefas
         if (is_complex && Array.isArray(subtasks) && subtasks.length > 0) {
             const updateSubtaskQ = `
-                UPDATE subtasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
+                UPDATE subtasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, position=?
                 WHERE id=?
             `;
             let completed = 0;
             subtasks.forEach((sub) => {
-                const subValues = [sub.title, sub.description || null, sub.priority, sub.due_date, sub.is_completed || false, sub.id];
+                const subValues = [sub.title, sub.description || null, sub.priority, sub.due_date, sub.is_completed|| false, position, sub.id];
                 db.query(updateSubtaskQ, subValues, (err2) => {
                     if (err2) console.error("Erro ao atualizar subtarefa:", err2);
                     completed++;
