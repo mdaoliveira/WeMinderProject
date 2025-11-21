@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
+import MapaInterativo from "../Mapa/Mapa";
 
 function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
     const [newTitulo, setNewTitulo] = useState("");
     const [newDescricao, setNewDescricao] = useState("");
     const [newData, setNewData] = useState("");
     const [prioridade, setPrioridade] = useState("");
+    const [position, setPosition] = useState("");
+
 
     useEffect(() => {
         if (!itemClicked) return;
@@ -28,6 +31,7 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
                 due_date: newData,
                 priority: prioridade,
                 is_completed: subtask.is_completed || false,
+                position: position,
             };
 
             fetch(`http://localhost:8800/subtarefas/${subtask.id}`, {
@@ -49,6 +53,7 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
                 due_date: newData,
                 priority: prioridade,
                 is_completed: itemClicked.is_completed || false,
+                position:position,
             };
 
             fetch(`http://localhost:8800/tarefas/${itemClicked.id}`, {
@@ -89,6 +94,16 @@ function EditarTarefas({ itemClicked, closeModal, setReloadCount }) {
                 <label className="content-cadastro">Data:</label>
                 <input type="date" value={newData} onChange={(e) => setNewData(e.target.value)} />
                 <br />
+
+                <MapaInterativo
+                    // já como [lat, lng] ou null
+                    mostrarBotao={true}
+                    onPositionChange={(coords) => {
+                    // ✅ protege contra null
+                    const posicao = coords && coords.length === 2 ? coords.join(",") : null;
+                    setPosition(posicao);
+                    }}
+                />
 
                 <br />
                 <div className="botoes">
