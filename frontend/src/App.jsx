@@ -14,7 +14,6 @@ import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from
 import MapaInterativo from "./components/Mapa/Mapa";
 import Lixeira from './components/Lixeira/Lixeira';
 import { useReactToPrint } from "react-to-print";
-import 'react-confirm-alert/src/react-confirm-alert.css';
 
 function AppContent() {
     const [modalOpen, setModalIsOpen] = useState(false);
