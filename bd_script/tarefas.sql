@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS complexTasks;
 DROP TABLE IF EXISTS simpleTasks;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS personalizacao;
+DROP TABLE IF EXISTS lixeira;
+DROP TABLE IF EXISTS subtasks_lixeira;
 
 -- =========================================================
 -- 1. TABELA GENÉRICA DE TAREFAS
@@ -67,7 +69,33 @@ INSERT INTO personalizacao (text_color, sidebar_color, background_color, card_co
 VALUES ('#1d4ed8', '#f3f4f6', '#f3f4f6', '#ffffff', 'lista');
 
 -- =========================================================
--- 5. INSERIR DADOS
+-- 5. LIXEIRA
+-- =========================================================
+CREATE TABLE IF NOT EXISTS lixeira (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    priority INTEGER CHECK(priority BETWEEN 0 AND 3),
+    due_date DATE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    position VARCHAR(45),
+    type ENUM('simple', 'complex') NOT NULL,
+    is_daily BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE subtasks_lixeira (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    parent_task_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    priority INTEGER CHECK(priority BETWEEN 0 AND 3),
+    due_date DATE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (parent_task_id) REFERENCES lixeira(id)
+);
+
+-- =========================================================
+-- 6. INSERIR DADOS
 -- =========================================================
 
 -- Inserir tarefas simples (1: inserir em tasks, 2: inserir o mesmo id em simpleTasks)

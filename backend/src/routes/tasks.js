@@ -2,13 +2,16 @@ import express from "express";
 import {
   getTasks,
   postTask,
-  deleteTask,
+ 
   editTask,
-  editSubtask,
+  editSubtask, 
+   
   getColor,
   updateColor,
   getRelatorioTarefasConcluidas
-} from "../controllers/tasks.js";
+, getLixeira, enviaLixeira, 
+    excluirPermanente, excluirTudoPermanente, 
+    restaurarTarefa, restaurarTudo} from "../controllers/tasks.js";
 
 const router = express.Router();
 
