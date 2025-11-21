@@ -6,7 +6,8 @@ function Sidebar({
     inicioClick,
     cadastroClick,
     exibirClick,
-    concluidasClick, agendaClick,
+    concluidasClick, 
+    agendaClick,
     configClick,
     pomodoroClicked,
     lixeiraClick}) {
