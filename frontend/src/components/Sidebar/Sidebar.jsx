@@ -9,7 +9,7 @@ function Sidebar({
     agendaClick,
     configClick,
     pomodoroClicked,
-}) {
+    lixeiraClick}) {
     const location = useLocation();
 
     const getButtonClass = (path) => {
@@ -20,14 +20,9 @@ function Sidebar({
     };
 
     return (
-        <aside
-            className="z-30 w-64 h-screen flex-col hidden lg:flex 
-  bg-[color:var(--sidebar-color)] dark:bg-gray-900 shadow-[4px_0_10px_rgba(0,0,0,0.3)]"
-        >
-            <div
-                className="py-6 bg-[color:var(--sidebar-color)] font-medium  dark:text-gray-300 flex flex-col h-full"
-                style={{ color: "var(--text-color)" }}
-            >
+        <aside className="z-30 w-64 h-screen flex-col hidden lg:flex 
+  bg-[color:var(--sidebar-color)] dark:bg-gray-900 shadow-[4px_0_10px_rgba(0,0,0,0.3)]">
+              <div className="py-6 bg-[color:var(--sidebar-color)] font-medium  dark:text-gray-300 flex flex-col h-full" style={{ color: "var(--text-color)" }}>
                 {/* Container da logo + botões */}
                 <div>
                     <div className="flex justify-center mb-10">
@@ -60,7 +55,12 @@ function Sidebar({
                                 Agenda
                             </button>
                         </li>
-                        <li>
+                          <li>
+                            <button onClick={lixeiraClick} className={getButtonClass("/lixeira")}>
+                                Lixeira
+                            </button>
+                        </li>
+                      <li>
                             <button
                                 onClick={pomodoroClicked}
                                 className={getButtonClass("/pomodoro")}
