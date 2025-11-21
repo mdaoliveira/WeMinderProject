@@ -194,7 +194,6 @@ export default function Pomodoro() {
                     </div>
                 </header>
 
-
                 {/* Timer + Lateral */}
                 <div className="grid md:grid-cols-[1fr_320px] gap-6">
                     {/* Timer Card */}
