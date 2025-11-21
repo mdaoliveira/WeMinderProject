@@ -168,6 +168,10 @@ export const editTask = (req, res) => {
         updates.push("is_completed=?");
         values.push(is_completed);
     }
+    if (position !== undefined){
+      updates.push("position=?");
+      values.push(position);
+    }
 
     // Se nenhum campo foi fornecido, retorna erro
     if (updates.length === 0) {
