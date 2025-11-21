@@ -140,13 +140,14 @@ export const editTask = (req, res) => {
         due_date,
         is_completed,
         is_complex,
+        position,
     } = req.body;
 
     const updateTaskQ = `
-        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?
+        UPDATE tasks SET title=?, description=?, priority=?, due_date=?, is_completed=?, position=?
         WHERE id=?
     `;
-    const taskValues = [title, description, priority, due_date, is_completed || false, taskId];
+    const taskValues = [title, description, priority, due_date, is_completed|| false, position, taskId];
 
     db.query(updateTaskQ, taskValues, (err) => {
         if (err) return res.status(500).json({ message: "Erro ao atualizar tarefa", error: err });
