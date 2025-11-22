@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import "./index.css";
 import "./App.css";
 import Sidebar from "./components/Sidebar/Sidebar";
@@ -10,8 +11,10 @@ import Tasks from "./components/Tasks/Tasks";
 import Configuracoes from "./components/Configuracoes/Configuracoes";
 import Pomodoro from "./components/Pomodoro/pomodoro";
 import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
+import SignupAndLogin from "./components/SignupAndLogin/SignupAndLogin";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Lixeira from './components/Lixeira/Lixeira';
 import { useReactToPrint } from "react-to-print";
 
@@ -24,8 +27,21 @@ function AppContent() {
     const [selectDelete, setSelectDelete] = useState(null);
     const [isChecked, setIsChecked] = useState(false);
     const [showConfirmCheckbox, setShowConfirmCheckbox] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const navigate = useNavigate();
+
+    // verifica se o usuário está autenticado
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/SignupAndLogin', { replace: true });
+            setIsAuthenticated(false);
+        } else {
+            setIsAuthenticated(true);
+        }
+    }, [navigate]);
+
     const location = useLocation();
 
     function clicked(item) {
@@ -158,12 +174,19 @@ function AppContent() {
         }
     }
 
+    // Se não estiver autenticado, vai para a página de login
+    if (!isAuthenticated) {
+        return <SignupAndLogin onTaskClicked={clicked} reloadPage={reloadCount} />;
+    }   
+
+
     const contentRef = useRef(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
     return (
         <div className="App flex">
-            <Sidebar
+            {isAuthenticated &&(
+                <Sidebar
                 inicioClick={inicioClicked}
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
@@ -173,8 +196,9 @@ function AppContent() {
                 configClick={configClicked}
                 defaultColor={color}
                 lixeiraClick={lixeiraClicked}
-            />
-            <main
+                />
+            )}
+                        <main
                 className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900"
                 ref={contentRef}
             >
@@ -402,13 +426,25 @@ function AppContent() {
 
                 <Routes>
                     <Route
-                        path="/"
-                        element={<Tasks onTaskClicked={clicked} reloadPage={reloadCount} />}
+                        path="/SignupAndLogin"
+                        element={<SignupAndLogin onTaskClicked={clicked} reloadPage={reloadCount} />}
                     />
                     <Route
+                        path="/"
+                        element={
+                          <ProtectedRoute isAuth={isAuthenticated}>
+                            <Tasks onTaskClicked={clicked} reloadPage={reloadCount} />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/exibir"
-                        element={<ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />}
-                    />
+                        element={
+                          <ProtectedRoute isAuth={isAuthenticated}>
+                            <ExibirTarefas onTaskClicked={clicked} reloadPage={reloadCount} />
+                          </ProtectedRoute>
+                        }
+                      />
                     <Route
                         path="/concluidas"
                         element={<TarefasConcluidas onTaskClicked={clicked} reloadPage={reloadCount} />}

@@ -1,6 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import SignupAndLogin from "../SignupAndLogin/SignupAndLogin";
+
 
 function Sidebar({
     inicioClick,
@@ -12,6 +15,9 @@ function Sidebar({
     pomodoroClicked,
     lixeiraClick}) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const [reloadCount, setReloadCount] = useState(0);
+  
 
     const getButtonClass = (path) => {
         const base = "w-full text-left rounded-md px-3 py-2 transition-colors duration-200";
@@ -19,6 +25,12 @@ function Sidebar({
             "hover:text-[color:var(--text-color)] dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700";
         return location.pathname === path ? `${base}` : `${base} ${inactive}`;
     };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    navigate("/SignupAndLogin");
+  };
 
     return (
         <aside className="z-30 w-64 h-screen flex-col hidden lg:flex 
@@ -87,7 +99,8 @@ function Sidebar({
 
                 {/* Botão Sair na base */}
                 <div className="px-6 mt-auto mb-6 flex justify-center">
-                    <button className="flex items-center space-x-3 hover:text-red-600 transition-colors duration-200 cursor-pointer">
+                    <button onClick={handleLogout} 
+                    className="flex items-center space-x-3 hover:text-red-600 transition-colors duration-200 cursor-pointer">
                         <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-2xl" />
                         <span className="text-[18px] font-medium">Sair</span>
                     </button>
