@@ -5,6 +5,10 @@
 /node_modules
 /.pnp
 .pnp.js
+bun.lock
+bun.lockb
+package-lock.json
+
 
 # testing
 /coverage

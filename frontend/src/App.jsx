@@ -5,17 +5,28 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import CadastroDeTarefas from "./components/CadastroDeTarefas/cadastroDeTarefas";
 import EditarTarefas from "./components/EditarTarefas/EditarTarefas";
 import ExibirTarefas from "./components/ExibirTarefas/ExibirTarefas";
+import TarefasConcluidas from "./components/TarefasConcluidas/TarefasConcluidas";
+import Agenda from "./components/Agenda/Agenda";
 import Tasks from "./components/Tasks/Tasks";
-import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import Configuracoes from "./components/Configuracoes/Configuracoes";
+import Pomodoro from "./components/Pomodoro/pomodoro";
+import React, { useState, useEffect, useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import MapaInterativo from "./components/Mapa/Mapa";
 import SignupAndLogin from "./components/SignupAndLogin/SignupAndLogin";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Lixeira from './components/Lixeira/Lixeira';
+import { useReactToPrint } from "react-to-print";
 
 function AppContent() {
     const [modalOpen, setModalIsOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [itemClicked, setItemClicked] = useState(null);
     const [reloadCount, setReloadCount] = useState(0);
+    const [color, setColor] = useState(null);
+    const [selectDelete, setSelectDelete] = useState(null);
+    const [isChecked, setIsChecked] = useState(false);
+    const [showConfirmCheckbox, setShowConfirmCheckbox] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const navigate = useNavigate();
@@ -31,6 +42,7 @@ function AppContent() {
         }
     }, [navigate]);
 
+    const location = useLocation();
 
     function clicked(item) {
         setModalIsOpen(true);
@@ -38,10 +50,19 @@ function AppContent() {
         setItemClicked(item);
     }
 
+    function clickedDelete(item) {
+        setModalIsOpen(true);
+        setModalType('detalhesLixeira');
+        setSelectDelete(item);
+    }
+
     function closeModal() {
         setModalIsOpen(false);
         setItemClicked(null);
+        setSelectDelete(null);
         setModalType(null);
+        setIsChecked(false);
+        setShowConfirmCheckbox(false);
     }
 
     function cadastroClicked() {
@@ -49,8 +70,29 @@ function AppContent() {
         setModalIsOpen(true);
     }
 
+    function configClicked() {
+        setModalType("configuracoes");
+        setModalIsOpen(true);
+    }
+
     function exibirClicked() {
         navigate("/exibir");
+    }
+
+    function lixeiraClicked() {
+        navigate('/lixeira');
+    }
+
+    function concluidasClicked() {
+        navigate("/concluidas");
+    }
+
+    function agendaClicked() {
+        navigate("/agenda");
+    }
+
+    function pomodoroClicked() {
+        navigate("/pomodoro");
     }
 
     function inicioClicked() {
@@ -58,8 +100,8 @@ function AppContent() {
     }
 
     function ExcluirTarefas(id) {
-        fetch(`http://localhost:8800/tarefas/${id}`, {
-            method: "DELETE",
+        fetch(`http://localhost:8800/lixeira/${id}`, {
+            method: "PUT"
         })
             .then(() => {
                 closeModal();
@@ -67,6 +109,51 @@ function AppContent() {
             })
             .catch((error) => console.error("Erro ao deletar registro -> ", error));
     }
+
+    function MarcarComoConcluida(id, completed) {
+        const payload = {
+            is_completed: completed,
+        };
+        fetch(`http://localhost:8800/tarefas/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        })
+            .then(() => {
+                console.log("Tarefa atualizada com sucesso");
+                setReloadCount((prev) => prev + 1);
+            })
+            .catch((error) => console.error("Erro ao atualizar tarefa -> ", error));
+    }
+
+    // obter os estilos do bd
+    useEffect(() => {
+        fetch("http://localhost:8800/color")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data) {
+                    // atualizar CSS
+                    if (data.color)
+                        document.documentElement.style.setProperty("--text-color", data.color);
+                    if (data.sidebar)
+                        document.documentElement.style.setProperty("--sidebar-color", data.sidebar);
+                    if (data.background)
+                        document.documentElement.style.setProperty(
+                            "--background-color",
+                            data.background
+                        );
+                    if (data.card)
+                        document.documentElement.style.setProperty("--card-color", data.card);
+                    if (data.card_position)
+                        document.documentElement.style.setProperty(
+                            "--card-position",
+                            data.card_position
+                        );
+                    if (data.color) setColor(data.color);
+                }
+            })
+            .catch((error) => console.error(error));
+    }, []);
 
     const priorityLabels = {
         0: "Sem Prioridade",
@@ -93,6 +180,9 @@ function AppContent() {
     }   
 
 
+    const contentRef = useRef(null);
+    const reactToPrintFn = useReactToPrint({ contentRef });
+
     return (
         <div className="App flex">
             {isAuthenticated &&(
@@ -100,10 +190,26 @@ function AppContent() {
                 inicioClick={inicioClicked}
                 cadastroClick={cadastroClicked}
                 exibirClick={exibirClicked}
+                concluidasClick={concluidasClicked}
+                agendaClick={agendaClicked}
+                pomodoroClicked={pomodoroClicked}
+                configClick={configClicked}
+                defaultColor={color}
+                lixeiraClick={lixeiraClicked}
                 />
             )}
-            
-            <main className="flex-1 min-h-screen overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
+                        <main
+                className="flex-1 min-h-screen overflow-auto p-6 bg-[color:var(--background-color)] dark:bg-gray-900"
+                ref={contentRef}
+            >
+                {location.pathname !== "/pomodoro" && (
+                    <img
+                        src="/images/print%20symbol.png"
+                        alt="Imprimir página"
+                        className="w-14 h-14 cursor-pointer"
+                        onClick={reactToPrintFn}
+                    ></img>
+                )}
                 {/* Modal de Cadastro */}
                 {modalOpen && modalType === "cadastro" && (
                     <div className="modal-show">
@@ -115,9 +221,21 @@ function AppContent() {
                     </div>
                 )}
 
+                {/* MODAL DE CONFIGURAÇÕES */}
+                {modalOpen && modalType === "configuracoes" && (
+                    <div className="modal-show">
+                        <Configuracoes
+                            itemClicked={itemClicked}
+                            setColor={setColor}
+                            closeModal={closeModal}
+                        />
+                    </div>
+                )}
+
+                {/* Modal de Detalhes */}
                 {modalOpen && modalType === "detalhes" && itemClicked && (
                     <div className="modal-show">
-                        <div className="modal-content">
+                        <div className="modal-content text-[color:var(--text-color)]">
                             <h1>
                                 <b>Detalhes da Tarefa</b>
                             </h1>
@@ -133,27 +251,75 @@ function AppContent() {
                                 <strong>Prioridade: </strong>
                                 {priorityLabels[itemClicked.priority]}
                             </p>
+                            <p>
+                                <strong>Repete diariamente: </strong>
+                                {itemClicked.is_daily ? "Sim" : "Não"}
+                            </p>
+                            <p>
+                              <input 
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  setShowConfirmCheckbox(true);
+                                }}
+                              />
+                              <strong> Marcar como concluída</strong>
+                            </p>
+
+                            {/* Confirmação customizada */}
+                            {showConfirmCheckbox && (
+                              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+                                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                                  <p className="mb-4 dark:text-gray-100">
+                                    {isChecked ? "Desmarcar" : "Marcar"} esta tarefa como concluída?
+                                  </p>
+                                  <div className="flex gap-4">
+                                    <button 
+                                      onClick={() => {
+                                        const newStatus = !isChecked;
+                                        setIsChecked(newStatus);
+                                        MarcarComoConcluida(itemClicked.id, newStatus);
+                                        setShowConfirmCheckbox(false);
+                                      }}
+                                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                                    >
+                                      Confirmar
+                                    </button>
+                                    <button 
+                                      onClick={() => {
+                                        setShowConfirmCheckbox(false);
+                                        setIsChecked(itemClicked.is_completed || false);
+                                      }}
+                                      className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
                             {itemClicked.subtasks && itemClicked.subtasks.length > 0 && (
-                                <div className="mt-6">
-                                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-                                        Subtarefas
+                                <div className="mt-6 bg-[color:var(--card-color)]">
+                                    <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">
+                                        Subtarefa
                                     </h2>
                                     {itemClicked.subtasks.map((sub, index) => (
                                         <div
                                             key={index}
-                                            className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-900"
+                                            className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-[color:var(--card-color)] dark:bg-gray-900"
                                         >
                                             <hr className="border-gray-300 dark:border-gray-700 mb-3" />
-                                            <p className="text-gray-800 dark:text-gray-200 mb-1">
+                                            <p className="dark:text-gray-200 mb-1">
                                                 <strong>Título: </strong>
                                                 {sub.title}
                                             </p>
-                                            <p className="text-gray-700 dark:text-gray-300 mb-1">
+                                            <p className="dark:text-gray-300 mb-1">
                                                 <strong>Descrição: </strong>
                                                 {sub.description}
                                             </p>
-                                            <p className="text-gray-700 dark:text-gray-300">
+                                            <p className="dark:text-gray-300">
                                                 <strong>Data: </strong>
                                                 {new Date(sub.due_date).toLocaleDateString(
                                                     "pt-BR",
@@ -177,7 +343,7 @@ function AppContent() {
                                     Fechar
                                 </button>
                                 <button
-                                    onClick={() => ExcluirTarefas(itemClicked.id, itemClicked.subtasks)}
+                                    onClick={() => ExcluirTarefas(itemClicked.id)}
                                     className="bg-red-600 hover:bg-red-700 transition text-white font-semibold px-4 py-2 rounded"
                                 >
                                     Excluir
@@ -194,7 +360,7 @@ function AppContent() {
                             </div>
 
                             <MapaInterativo
-                                localSalvo={coordenadas} // já como [lat, lng] ou null
+                                localSalvo={coordenadas}
                                 mostrarBotao={true}
                                 onPositionChange={(coords) => {
                                     // Posição pode ser atualizada aqui no futuro se necessário
@@ -213,6 +379,49 @@ function AppContent() {
                             setReloadCount={setReloadCount}
                         />
                     </div>
+                )}
+
+                {/* Modal de Detalhes Lixeira*/}
+                {modalOpen && modalType === 'detalhesLixeira' && selectDelete && (
+                <div className="modal-show">
+                    <div className="modal-content text-[color:var(--text-color)]">
+                    <h1><b>Detalhes da Tarefa</b></h1>
+                    <p><strong>Título: </strong>{selectDelete.title}</p>
+                    <p><strong>Descrição: </strong>{selectDelete.description}</p>
+                    <p><strong>Prioridade: </strong>{priorityLabels[selectDelete.priority]}</p>
+                    <p><strong>Data: </strong>{new Date(selectDelete.due_date).toLocaleDateString("pt-BR")}</p>
+
+                    {selectDelete.subtasks && selectDelete.subtasks.length > 0 && (
+                        <div className="mt-6 bg-[color:var(--card-color)]">
+                        <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">Subtarefa</h2>
+                        {selectDelete.subtasks.map((sub, index) => (
+                            <div key={index} className="mb-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 bg-[color:var(--card-color)] dark:bg-gray-900">
+                            <hr className="border-gray-300 dark:border-gray-700 mb-3" />
+                            <p className="dark:text-gray-200 mb-1">
+                                <strong>Título: </strong>{sub.title}
+                            </p>
+                            <p className="dark:text-gray-300 mb-1">
+                                <strong>Descrição: </strong>{sub.description}
+                            </p>
+                            <p className="dark:text-gray-300">
+                                <strong>Data: </strong>{new Date(sub.due_date).toLocaleDateString("pt-BR", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric"
+                                })}
+                            </p>
+                            </div>
+                        ))}
+                        </div>
+                    )}
+
+                    <div className="flex justify-center items-center pt-4">
+                        <button type="button" onClick={closeModal} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+                        >Fechar
+                        </button>
+                    </div>
+                    </div>
+                </div>
                 )}
 
                 <Routes>
@@ -236,6 +445,19 @@ function AppContent() {
                           </ProtectedRoute>
                         }
                       />
+                    <Route
+                        path="/concluidas"
+                        element={<TarefasConcluidas onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+                    <Route
+                        path="/agenda"
+                        element={<Agenda onTaskClicked={clicked} reloadPage={reloadCount} />}
+                    />
+                    <Route path="/pomodoro" element={<Pomodoro />} />
+                    <Route 
+                        path="/lixeira" 
+                        element={<Lixeira onTaskClicked={clickedDelete} reloadPage={reloadCount} />} 
+                    />
                 </Routes>
             </main>
         </div>
